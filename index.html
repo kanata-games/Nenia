@@ -135,6 +135,7 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
       <button class="tg" id="tgAuto" aria-pressed="true">おまかせ行動</button>
       <button class="tg" id="tgShop" aria-pressed="true">おかいもの自動</button>
       <button class="tg" id="tgReb" aria-pressed="true">うまれかわり自動</button>
+      <button class="tg" id="tgUp" aria-pressed="true">転生の泉 自動</button>
       <button class="tg" id="tgSpeed" aria-pressed="false">はやおくり ×2</button>
     </div>
   </header>
@@ -206,7 +207,7 @@ let S;
 function newGame(){
   const meta={mem:0,talent:{},up:{life:0,exp:0,inh:0,slow:0},lives:[],lifeNo:1};
   ACTS.forEach(a=>meta.talent[a.k]=0);
-  S={meta,life:freshLife(null),auto:true,autoShop:true,autoReb:true,speed:1,dead:false,savedAt:Date.now()};
+  S={meta,life:freshLife(null),auto:true,autoShop:true,autoReb:true,autoUp:true,speed:1,dead:false,savedAt:Date.now()};
   addLog('この世に生まれ落ちた。まずは畑を手伝おう',true);
 }
 function load(){
@@ -257,7 +258,7 @@ function step(dt){
     if(e[1]){const g=Math.ceil((goldRate(L.act)+1)*YEAR_SEC*e[1]);L.gold+=g;addLog(`${e[0]}（金貨+${fmt(g)}）`)}else addLog(e[0]);
   }
   autoT+=dt;
-  if(autoT>=1){autoT=0; if(S.auto)autoPick(); if(S.autoShop)autoBuy()}
+  if(autoT>=1){autoT=0; if(S.auto)autoPick(); if(S.autoShop)autoBuy(); if(S.autoUp)autoUpgrade()}
   if(L.age>=lifespan())die();
 }
 function autoPick(){
@@ -272,6 +273,16 @@ function autoPick(){
   });
   if(best)L.act=best.k;
 }
+function autoUpgrade(){
+  let bought=false;
+  for(;;){
+    let best=null,bc=Infinity;
+    UPS.forEach(u=>{const l=S.meta.up[u.k]; if(u.max&&l>=u.max)return; const c=u.cost(l); if(c<bc){bc=c;best=u}});
+    if(!best||S.meta.mem<bc)break;
+    S.meta.mem-=bc; S.meta.up[best.k]++; bought=true;
+  }
+  if(bought&&curTab==='reb')renderPane();
+}
 function autoBuy(){ITEMS.forEach(i=>{if(!S.life.items[i.k]&&S.life.gold>=i.c){S.life.gold-=i.c;S.life.items[i.k]=1;addLog(`${i.n}を買った`)}})}
 
 function die(){
@@ -279,6 +290,7 @@ function die(){
   const gain=Math.max(1,Math.floor(totalLv()/12)+Math.floor(L.age/15)+(L.lv.king>0?5:0));
   ACTS.forEach(a=>{M.talent[a.k]=Math.max(M.talent[a.k],L.lv[a.k])});
   M.mem+=gain;
+  if(S.autoUp)autoUpgrade();
   const bestA=ACTS.reduce((b,a)=>L.lv[a.k]>L.lv[b.k]?a:b,ACTS[0]);
   M.lives.unshift({no:M.lifeNo,age:Math.floor(L.age),title:title(),best:`${bestA.n} Lv${L.lv[bestA.k]}`,gain});
   if(M.lives.length>30)M.lives.pop();
@@ -414,10 +426,11 @@ function showDeath(){
   $('veil').hidden=false; $('reborn').addEventListener('click',rebirth); $('reborn').focus();
 }
 
-function syncToggles(){$('tgAuto').setAttribute('aria-pressed',S.auto);$('tgShop').setAttribute('aria-pressed',S.autoShop);$('tgReb').setAttribute('aria-pressed',S.autoReb);$('tgSpeed').setAttribute('aria-pressed',S.speed>1)}
+function syncToggles(){$('tgAuto').setAttribute('aria-pressed',S.auto);$('tgShop').setAttribute('aria-pressed',S.autoShop);$('tgReb').setAttribute('aria-pressed',S.autoReb);$('tgUp').setAttribute('aria-pressed',S.autoUp);$('tgSpeed').setAttribute('aria-pressed',S.speed>1)}
 $('tgAuto').addEventListener('click',()=>{S.auto=!S.auto;syncToggles()});
 $('tgShop').addEventListener('click',()=>{S.autoShop=!S.autoShop;syncToggles()});
 $('tgReb').addEventListener('click',()=>{S.autoReb=!S.autoReb;S.rebT=3;syncToggles();if(S.dead)showDeath()});
+$('tgUp').addEventListener('click',()=>{S.autoUp=!S.autoUp;syncToggles();if(S.autoUp)autoUpgrade()});
 $('tgSpeed').addEventListener('click',()=>{S.speed=S.speed>1?1:2;syncToggles()});
 
 let tt;
@@ -428,6 +441,7 @@ function start(hotData){
   if(hotData&&hotData.S)S=hotData.S;
   else if(!load())newGame();
   if(S.autoReb===undefined)S.autoReb=true;
+  if(S.autoUp===undefined)S.autoUp=true;
   else{ // offline progress, up to 2 hours
     let away=Math.min(7200,(Date.now()-(S.savedAt||Date.now()))/1000);
     if(away>30&&!(S.dead&&!S.autoReb)){const g0=S.life.gold; while(away>0&&!(S.dead&&!S.autoReb)){step(Math.min(1,away));away-=1}
