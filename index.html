@@ -47,6 +47,9 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
 .dex-grid{display:flex;flex-wrap:wrap;gap:6px}
 .dex-grid span{padding:3px 10px;border-radius:999px;background:var(--bg);font-size:.78rem}
 .dex-grid span.no{color:var(--muted);opacity:.55}
+.stat{display:flex;justify-content:space-between;gap:12px;padding:7px 12px;border-radius:10px;background:var(--bg);font-size:.86rem}
+.stat b{font-variant-numeric:tabular-nums;text-align:right}
+.stat.big{background:var(--accent-soft)} .stat.big b{font-size:1.1rem}
 
 .stage{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
 .chip{font-family:var(--display);background:var(--stage);color:#fff;border-radius:999px;padding:2px 16px;font-size:1.05rem;transition:background .8s}
@@ -322,6 +325,7 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
         <button class="tab" role="tab" data-t="dex" aria-selected="false">図鑑</button>
         <button class="tab" role="tab" data-t="log" aria-selected="false">年代記</button>
         <button class="tab" role="tab" data-t="past" aria-selected="false">歴代の人生</button>
+        <button class="tab" role="tab" data-t="rec" aria-selected="false">記録</button>
         <button class="tab" role="tab" data-t="save" aria-selected="false">セーブ</button>
       </div>
       <div class="pane" id="pane"></div>
@@ -385,6 +389,9 @@ const pg=k=>(S.meta.pup&&S.meta.pup[k])||0;
 const pageMult=()=>(1+0.25*(S.meta.pageTotal||0))*Math.pow(3,pg('art'));
 const pageGain=()=>stage()>=4?Math.floor(Math.sqrt((S.meta.starTotal||0)/5)):0;
 const wantAutoPage=()=>S.autoPage&&stage()>=4&&pageGain()>=Math.max(1,S.meta.pageTotal||0);
+function markFirst(k){const st=S.meta.stats; if(st&&st.first[k]===undefined)st.first[k]=st.play+st.away}
+function fmtDur(t){t=Math.floor(t||0); const d=Math.floor(t/86400), h=Math.floor(t%86400/3600), m=Math.floor(t%3600/60), sec=t%60;
+  if(d)return `${d}日${h}時間${m}分`; if(h)return `${h}時間${m}分`; if(m)return `${m}分${sec}秒`; return `${sec}秒`}
 function dexAdd(cat,key){const M=S.meta; if(!M.dex)return; if(!M.dex[cat][key]){M.dex[cat][key]=1; M.dexN=(M.dexN||0)+1}}
 const allEvents=()=>EVENTS.concat(...STAGE_EV);
 const starMult=()=>1+0.1*(S.meta.starTotal||0);
@@ -432,7 +439,7 @@ function freshLife(meta){
 }
 let S;
 function newGame(){
-  const meta={page:0,pageTotal:0,vol:1,pup:{},dex:{st:{0:1},ac:{farm:1},ti:{},ev:{}},dexN:2,star:0,starTotal:0,starNo:0,sup:{},mem:0,talent:{},up:{life:0,exp:0,inh:0,slow:0},lives:[],lifeNo:1};
+  const meta={stats:{started:Date.now(),play:0,away:0,first:{},starAll:0},page:0,pageTotal:0,vol:1,pup:{},dex:{st:{0:1},ac:{farm:1},ti:{},ev:{}},dexN:2,star:0,starTotal:0,starNo:0,sup:{},mem:0,talent:{},up:{life:0,exp:0,inh:0,slow:0},lives:[],lifeNo:1};
   ACTS.forEach(a=>meta.talent[a.k]=0);
   S={meta,life:freshLife(null),auto:true,autoShop:true,autoReb:true,autoUp:true,autoStar:true,autoPage:true,speed:1,dead:false,savedAt:Date.now()};
   addLog('この世に生まれ落ちた。まずは畑を手伝おう',true);
@@ -553,7 +560,7 @@ function rebirth(){
 
 function starReturn(){
   const M=S.meta, g=starGain(); if(g<=0)return;
-  M.star=(M.star||0)+g; M.starTotal=(M.starTotal||0)+g; M.starNo=(M.starNo||0)+1;
+  M.star=(M.star||0)+g; M.starTotal=(M.starTotal||0)+g; M.starNo=(M.starNo||0)+1; if(M.stats)M.stats.starAll=(M.stats.starAll||0)+1; markFirst('star');
   M.mem=0; M.memTotal=0; M.stage=pg('open'); UPS.forEach(u=>M.up[u.k]=0); ACTS.forEach(a=>M.talent[a.k]=0);
   M.lifeNo++; M.lives.unshift({st:0,no:M.lifeNo-1,age:0,title:'星還り',best:`${M.starNo}回目の星還り`,gain:0});
   S.life=freshLife(M); S.dead=false; S.stageUp=null; applyStage();
@@ -563,7 +570,7 @@ function starReturn(){
 }
 function newVolume(){
   const M=S.meta, g=pageGain(); if(g<=0)return;
-  M.page=(M.page||0)+g; M.pageTotal=(M.pageTotal||0)+g; M.vol=(M.vol||1)+1;
+  M.page=(M.page||0)+g; M.pageTotal=(M.pageTotal||0)+g; M.vol=(M.vol||1)+1; markFirst('vol');
   M.star=0; M.starTotal=0; M.starNo=0; M.sup={};
   M.mem=0; M.memTotal=0; M.stage=pg('open'); UPS.forEach(u=>M.up[u.k]=0); ACTS.forEach(a=>M.talent[a.k]=0);
   M.lifeNo++; M.lives.unshift({st:0,no:M.lifeNo-1,age:0,title:'新しい巻',best:`第${M.vol}巻へ`,gain:0});
@@ -595,7 +602,7 @@ function showStarCard(){
 }
 function advanceStage(){
   const M=S.meta; M.stage=M.stage||0;
-  while(M.stage<STAGES.length-1&&(M.memTotal||0)>=thr(M.stage+1)){M.stage++;dexAdd('st',M.stage)}
+  while(M.stage<STAGES.length-1&&(M.memTotal||0)>=thr(M.stage+1)){M.stage++;dexAdd('st',M.stage);markFirst('s'+M.stage)}
   applyStage();
 }
 function applyStage(){try{document.documentElement.style.setProperty('--stage',STAGES[stage()].c)}catch(e){}}
@@ -756,6 +763,18 @@ function renderPane(){
     sec('活動',ACTS.map(a=>[a.n,D.ac[a.k]]));
     sec('称号',TITLES.map(([_,t])=>[t,D.ti[t]]));
     sec('出来事',ev.map(e=>[e[0],D.ev[e[0]]]));
+  }else if(curTab==='rec'){
+    const M=S.meta, st=M.stats, tot=st.play+st.away;
+    const d=new Date(st.started), day=`${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+    const row=(a,b,c)=>`<div class="stat${c?' big':''}"><span>${a}</span><b>${b}</b></div>`;
+    let h=`<p class="note">${st.partial?'記録はこのアップデートから始まっています。':''}画面を開いていた時間と、閉じているあいだに放置で進んだ時間を分けて記録しています。</p>`;
+    h+=row('合計の時間',fmtDur(tot),1)+row('画面を開いていた時間',fmtDur(st.play))+row('放置で進んだ時間',fmtDur(st.away))+row('記録をはじめた日',day);
+    h+=`<p class="note" style="margin-top:8px">これまでの歩み</p>`;
+    h+=row('生きた人生',`${fmt(M.lifeNo)} 回`)+row('星還り',`${fmt(st.starAll||0)} 回`)+row('いまの巻',`第${M.vol||1}巻`)+row('図鑑',`${M.dexN||0} 項目`);
+    h+=`<p class="note" style="margin-top:8px">はじめてたどり着いた時間（合計の時間で）</p>`;
+    STAGES.forEach((x,i)=>{if(i)h+=row(x.n,st.first['s'+i]!==undefined?fmtDur(st.first['s'+i]):'まだ')});
+    h+=row('はじめての星還り',st.first.star!==undefined?fmtDur(st.first.star):'まだ')+row('はじめての新しい巻',st.first.vol!==undefined?fmtDur(st.first.vol):'まだ');
+    p.insertAdjacentHTML('beforeend',h);
   }else if(curTab==='save'){
     p.insertAdjacentHTML('beforeend',`<p class="note">データはこのブラウザに自動で保存されています。ページを閉じていても、最大12時間ぶんは次に開いたときにまとめて進みます。別の端末やブラウザに移すとき、念のための控えを取るときは「セーブコード」を使ってください。</p>
      <div class="savebox">
@@ -844,6 +863,7 @@ function start(hotData){
   if(S.autoStar===undefined)S.autoStar=true;
   S.meta.sup=S.meta.sup||{}; S.meta.star=S.meta.star||0; S.meta.starTotal=S.meta.starTotal||0;
   if(S.autoPage===undefined)S.autoPage=true;
+  if(!S.meta.stats)S.meta.stats={started:Date.now(),play:0,away:0,first:{},starAll:S.meta.starNo||0,partial:true};
   {const M=S.meta; M.pup=M.pup||{}; M.page=M.page||0; M.pageTotal=M.pageTotal||0; M.vol=M.vol||1;
    if(!M.dex){M.dex={st:{},ac:{},ti:{},ev:{}}; M.dexN=0;
      for(let i=0;i<=(M.stage||0);i++)dexAdd('st',i);
@@ -857,7 +877,7 @@ function start(hotData){
   if(loaded){ // offline progress, up to 2 hours
     let away=Math.min(43200,(Date.now()-(S.savedAt||Date.now()))/1000);
     if(away>30&&!(S.dead&&!S.autoReb)){
-      const g0=S.life.gold, n0=S.meta.lifeNo, st0=stage();
+      const g0=S.life.gold, n0=S.meta.lifeNo, st0=stage(); S.meta.stats.away+=away;
       while(away>0&&!(S.dead&&!S.autoReb)){step(Math.min(1,away));away-=1}
       const lives=S.meta.lifeNo-n0;
       setTimeout(()=>toast(stage()>st0?`留守のあいだに「${STAGES[stage()].n}」までたどり着きました`
@@ -868,11 +888,12 @@ function start(hotData){
   makeStars(); lastLog=S.life.log[0]||null;
   buildActs(); syncToggles(); renderPane(); render();
   if(S.dead)showDeath();
-  let last=performance.now(), acc=0, saveT=0;
+  let last=performance.now(), acc=0, saveT=0, recT=0;
   function loop(now){
     let dt=Math.min(0.5,(now-last)/1000); last=now;
     const was=S.dead;
-    step(dt*S.speed); moveHero(dt);
+    step(dt*S.speed); moveHero(dt); S.meta.stats.play+=dt;
+    if(curTab==='rec'){recT+=dt; if(recT>1){recT=0;renderPane()}}
     acc+=dt; saveT+=dt;
     if(acc>0.1){acc=0;render(); if(curTab==='log'&&S.life.log.length&&$('pane').querySelectorAll('li').length!==S.life.log.length)renderPane()}
     if(saveT>5){saveT=0;save()}
