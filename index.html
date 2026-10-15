@@ -410,16 +410,31 @@ const STAGE_EV=[[],
  [['銀の花で冠を編んだ',0],['月の泉に自分の顔が映った',0],['眠れない月の子に子守歌を歌った',0],['花の蜜が金色に光った',3]],
  [['光の中で、むかしの自分に手をふった',0],['物語の最初の一文字を見つけた',0],['光の糸がほどけて歌になった',0],['まぶしい朝がずっと続いた',2]]];
 const ITEMS=[
- {k:'hat',   n:'わら帽子',       c:40,    d:'畑仕事の稼ぎ ×2'},
- {k:'woodsw',n:'木刀',           c:150,   d:'素振りの上達 ×1.5'},
- {k:'candle',n:'ろうそく',       c:400,   d:'読書の上達 ×1.5'},
- {k:'bed',   n:'ふかふかベッド', c:1200,  d:'すべての上達 ×1.2'},
- {k:'cart',  n:'荷車',           c:3000,  d:'行商の稼ぎ ×2'},
- {k:'armor', n:'革のよろい',     c:9000,  d:'冒険の上達 ×1.5'},
- {k:'orb',   n:'水晶玉',         c:30000, d:'魔法の上達 ×2'},
- {k:'house', n:'小さな家',       c:80000, d:'すべての上達 ×1.5'},
- {k:'castle',n:'お城',           c:2e6,   d:'王の政務の稼ぎ ×2'},
+ {k:'hat',    n:'わら帽子',       c:40,    g:['farm',2],      d:'畑仕事の稼ぎ ×2'},
+ {k:'woodsw', n:'木刀',           c:150,   e:['sword',1.5],   d:'素振りの上達 ×1.5'},
+ {k:'candle', n:'ろうそく',       c:400,   e:['book',1.5],    d:'読書の上達 ×1.5'},
+ {k:'shrine', n:'神殿への寄付',   c:500,   gr:3, mem:0.1,     d:'この人生でもらえる記憶のかけら +10%'},
+ {k:'bed',    n:'ふかふかベッド', c:1200,  e:['*',1.2],       d:'すべての上達 ×1.2'},
+ {k:'cart',   n:'荷車',           c:3000,  g:['trade',2],     d:'行商の稼ぎ ×2'},
+ {k:'armor',  n:'革のよろい',     c:9000,  e:['adv',1.5],     d:'冒険の上達 ×1.5'},
+ {k:'orb',    n:'水晶玉',         c:30000, e:['magic',2],     d:'魔法の上達 ×2'},
+ {k:'house',  n:'小さな家',       c:80000, e:['*',1.5],       d:'すべての上達 ×1.5'},
+ {k:'castle', n:'お城',           c:2e6,   g:['king',2],      d:'王の政務の稼ぎ ×2'},
+ {k:'rod',    st:1, n:'よくしなる釣り竿', c:5000,  g:['fish',2],     d:'釣りの稼ぎ ×2'},
+ {k:'sail',   st:1, n:'大きな帆',   c:2e5,  g:['ship',2],     d:'船の交易の稼ぎ ×2'},
+ {k:'shield', st:2, n:'騎士の盾',   c:1e6,  g:['knight',2],   d:'騎士団の稼ぎ ×2'},
+ {k:'balloon',st:3, n:'気球',       c:3e7,  g:['cloud',2],    d:'雲の交易の稼ぎ ×2'},
+ {k:'scope',  st:4, n:'大望遠鏡',   c:1e8,  e:['starread',2], d:'星詠みの上達 ×2'},
+ {k:'scrown', st:4, n:'星の冠',     c:1e9,  g:['starking',2], d:'星の海の王の稼ぎ ×2'},
+ {k:'basket', st:5, n:'銀の花かご', c:1e10, g:['moonfl',2],   d:'月の花摘みの稼ぎ ×2'},
+ {k:'spool',  st:6, n:'金の糸巻き', c:1e12, g:['weave',2],    d:'光の紡ぎの稼ぎ ×2'},
 ];
+const il=k=>+(S.life.items[k]||0);
+const icost=i=>i.c*Math.pow(i.gr||6,il(i.k));
+function itemExp(k){let m=1; ITEMS.forEach(i=>{if(i.e&&(i.e[0]==='*'||i.e[0]===k)){const l=il(i.k); if(l)m*=Math.pow(i.e[1],l)}}); return m}
+function itemGold(k){let m=1; ITEMS.forEach(i=>{if(i.g&&i.g[0]===k){const l=il(i.k); if(l)m*=Math.pow(i.g[1],l)}}); return m}
+function buyItem(i){const c=icost(i); if(S.life.gold<c)return false; S.life.gold-=c; const l=il(i.k)+1; S.life.items[i.k]=l;
+  if(l===1)addLog(`${i.n}を買った`); else if(l%5===0)addLog(`${i.n}を Lv${l} まで強化した`); return true}
 const UPS=[
  {k:'life',  n:'長寿の泉',     d:'寿命 +5歳',              cost:l=>2+l*3},
  {k:'exp',   n:'早熟の才',     d:'すべての上達 +25%',      cost:l=>4+l*4},
@@ -457,16 +472,14 @@ const has=k=>!!S.life.items[k];
 function expMult(k){
   const L=S.life.lv;
   let m=(1+0.04*S.meta.talent[k])*(1+0.25*S.meta.up.exp)*(1+0.012*L.book*(L.magic>0?1+L.magic*0.04:1));
-  if(has('bed'))m*=1.2; if(has('house'))m*=1.5;
-  if(k==='sword'&&has('woodsw'))m*=1.5; if(k==='book'&&has('candle'))m*=1.5;
-  if(k==='adv'){m*=1+0.02*L.sword; if(has('armor'))m*=1.5}
-  if(k==='magic'&&has('orb'))m*=2;
+  m*=itemExp(k);
+  if(k==='adv')m*=1+0.02*L.sword;
   m*=1+0.01*(L.music||0); m*=stExp()*starMult()*Math.pow(1.5,sup('bless'))*pageMult()*(1+0.01*(S.meta.dexN||0));
   return m;
 }
 function goldRate(k){
   const a=ACTS.find(x=>x.k===k); let g=a.g*(1+0.15*S.life.lv[k]);
-  if(k==='farm'&&has('hat'))g*=2; if(k==='trade'&&has('cart'))g*=2; if(k==='king'&&has('castle'))g*=2;
+  g*=itemGold(k);
   return g*stGold()*starMult()*Math.pow(2,sup('gold'))*pageMult()*(1+0.02*(S.life.lv.dream||0));
 }
 const unlocked=a=>stage()>=(a.st||0)&&a.u(S.life.lv);
@@ -531,11 +544,17 @@ function autoUpgrade(){
   }
   if(bought&&(curTab==='reb'||curTab==='starr'||curTab==='page'))renderPane();
 }
-function autoBuy(){ITEMS.forEach(i=>{if(!S.life.items[i.k]&&S.life.gold>=i.c){S.life.gold-=i.c;S.life.items[i.k]=1;addLog(`${i.n}を買った`)}})}
+function autoBuy(){
+  for(let n=0;n<60;n++){
+    let best=null,bc=Infinity;
+    ITEMS.forEach(i=>{if((i.st||0)>stage())return; const c=icost(i); if(c<bc){bc=c;best=i}});
+    if(!best||!buyItem(best))break;
+  }
+}
 
 function die(){
   const L=S.life, M=S.meta;
-  const gain=Math.max(1,Math.floor((totalLv()/12+L.age/15+(L.lv.king>0?5:0))*(1+0.02*(L.lv.starread||0))*Math.pow(1.5,sup('memo'))*(1+0.1*(S.meta.pageTotal||0))));
+  const gain=Math.max(1,Math.floor((totalLv()/12+L.age/15+(L.lv.king>0?5:0))*(1+0.02*(L.lv.starread||0))*Math.pow(1.5,sup('memo'))*(1+0.1*(S.meta.pageTotal||0))*(1+0.1*il('shrine'))));
   ACTS.forEach(a=>{M.talent[a.k]=Math.max(M.talent[a.k],L.lv[a.k])});
   M.mem+=gain; M.memTotal=(M.memTotal||0)+gain;
   const st0=stage(); advanceStage();
@@ -643,7 +662,7 @@ function makeStars(){
 }
 /* ---------- view ---------- */
 const $=id=>document.getElementById(id);
-function fmt(n){n=Math.floor(n); if(n<1e4)return n.toLocaleString('ja-JP'); if(n<1e8)return (n/1e4).toFixed(n<1e5?1:0)+'万'; if(n<1e12)return (n/1e8).toFixed(1)+'億'; return (n/1e12).toFixed(1)+'兆'}
+function fmt(n){n=Math.floor(n); if(n<1e4)return n.toLocaleString('ja-JP'); if(n<1e8)return (n/1e4).toFixed(n<1e5?1:0)+'万'; if(n<1e12)return (n/1e8).toFixed(1)+'億'; if(n<1e16)return (n/1e12).toFixed(1)+'兆'; if(n<1e20)return (n/1e16).toFixed(1)+'京'; if(n<1e24)return (n/1e20).toFixed(1)+'垓'; return n.toExponential(2)}
 
 const actEls={};
 function buildActs(){
@@ -698,11 +717,10 @@ let curTab='shop';
 function renderPane(){
   const p=$('pane'); p.innerHTML='';
   if(curTab==='shop'){
-    p.insertAdjacentHTML('beforeend','<p class="note">この人生のあいだ効き目がつづく道具です。生まれ変わると無くなります。</p>');
-    ITEMS.forEach(i=>p.insertAdjacentHTML('beforeend',`<div class="item" data-i="${i.k}"><span class="t">${i.n}</span><span class="d">${i.d}</span><button>金貨 ${fmt(i.c)}</button></div>`));
-    p.querySelectorAll('.item').forEach(el=>el.querySelector('button').addEventListener('click',()=>{
-      const i=ITEMS.find(x=>x.k===el.dataset.i); if(S.life.items[i.k]||S.life.gold<i.c)return;
-      S.life.gold-=i.c; S.life.items[i.k]=1; addLog(`${i.n}を買った`); render();
+    p.insertAdjacentHTML('beforeend','<p class="note">道具は何度でも強化できて、強化するたびに効き目が重なります。そのぶん値段も上がっていきます。生まれ変わると無くなります。</p>');
+    ITEMS.filter(i=>(i.st||0)<=stage()).forEach(i=>p.insertAdjacentHTML('beforeend',`<div class="item" data-i="${i.k}"><span class="t">${i.n} <span class="num lvl" style="color:var(--muted);font-weight:500"></span></span><span class="d">${i.d}（強化ごと）</span><button></button></div>`));
+    p.querySelectorAll('.item[data-i]').forEach(el=>el.querySelector('button').addEventListener('click',()=>{
+      const i=ITEMS.find(x=>x.k===el.dataset.i); if(S.dead)return; if(buyItem(i))render();
     }));
   }else if(curTab==='reb'){
     p.insertAdjacentHTML('beforeend','<p class="note">人生を終えるたびに「記憶のかけら」がたまります。ここで使うと、次の人生からずっと効きます。上達した技は「才能」として残り、次の人生で伸びやすくなります。</p>');
@@ -810,8 +828,8 @@ function renderPane(){
 }
 function refreshButtons(){
   $('pane').querySelectorAll('.item[data-i]').forEach(el=>{
-    const i=ITEMS.find(x=>x.k===el.dataset.i), b=el.querySelector('button'), own=!!S.life.items[i.k];
-    el.classList.toggle('owned',own); b.disabled=own||S.life.gold<i.c||S.dead; b.textContent=own?'持っている':'金貨 '+fmt(i.c);
+    const i=ITEMS.find(x=>x.k===el.dataset.i), b=el.querySelector('button'), l=il(i.k), c=icost(i);
+    b.disabled=S.life.gold<c||S.dead; b.textContent='金貨 '+fmt(c); el.querySelector('.lvl').textContent=l?'Lv'+l:'';
   });
   $('pane').querySelectorAll('.item[data-p]').forEach(el=>{
     const u=PUPS.find(x=>x.k===el.dataset.p), l=pg(u.k), b=el.querySelector('button'), mx=u.max&&l>=u.max;
