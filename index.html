@@ -14,6 +14,7 @@
 :root{
   --bg:#e9eee8; --surface:#f8faf5; --sunk:#dfe6de; --ink:#22302a; --muted:#64736b;
   --accent:#c5861a; --accent-soft:#f3e2bf; --teal:#3b6a60; --teal-soft:#d4e5df; --line:#c9d3ca; --danger:#b4533c;
+  --stage:#5f8a3a;
   --display:"Yusei Magic","Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
   --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
 }
@@ -24,7 +25,7 @@
   --bg:#131917; --surface:#1c2421; --sunk:#252f2b; --ink:#e6ece5; --muted:#93a198;
   --accent:#e6ae48; --accent-soft:#3d3220; --teal:#83b6a8; --teal-soft:#21342f; --line:#33403b; --danger:#e08a73; color-scheme:dark}
 
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-weight:500;line-height:1.6;
+body{background:var(--bg);background:color-mix(in srgb,var(--bg) 90%,var(--stage));transition:background .8s;color:var(--ink);font-family:var(--body);font-weight:500;line-height:1.6;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
 .wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 button{font:inherit;color:inherit;cursor:pointer}
@@ -32,7 +33,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .num{font-variant-numeric:tabular-nums}
 
 /* header */
-.top{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.top{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--stage);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
 .toprow{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px}
 h1{font-family:var(--display);font-weight:400;font-size:1.7rem;margin:0;line-height:1.2;text-wrap:balance}
 h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:8px;letter-spacing:.05em}
@@ -42,6 +43,12 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
 .purse span{font-size:.72rem;color:var(--muted);letter-spacing:.08em}
 .gold b{color:var(--accent)} .star b{color:var(--teal)}
 
+.stage{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
+.chip{font-family:var(--display);background:var(--stage);color:#fff;border-radius:999px;padding:2px 16px;font-size:1.05rem;transition:background .8s}
+.sgauge{flex:1 1 160px;min-width:0;height:9px;border-radius:5px;background:var(--sunk);overflow:hidden}
+.sgauge i{display:block;height:100%;width:0;background:var(--stage);transition:width .5s}
+.snext{font-size:.8rem;color:var(--muted);flex-basis:100%}
+.card .arrive{font-family:var(--display);font-size:1.4rem;color:var(--stage);margin:0}
 .ribbon{position:relative;height:38px}
 .ribbon .track{position:absolute;left:0;right:0;top:12px;height:12px;border-radius:6px;background:var(--sunk);overflow:hidden}
 .ribbon .fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--accent));width:0}
@@ -126,6 +133,11 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
         <div class="star"><b class="num" id="mem">0</b><span>記憶のかけら</span></div>
       </div>
     </div>
+    <div class="stage">
+      <span class="chip" id="stName">村</span>
+      <div class="sgauge"><i id="stFill"></i></div>
+      <span class="snext num" id="stNext"></span>
+    </div>
     <div class="ribbon" id="ribbon"><div class="track"><div class="fill" id="rfill"></div></div><div class="me" id="rme">14歳</div></div>
     <div class="agebar">
       <div>いま <b class="num" id="age">14</b>歳 ・ 寿命 <b class="num" id="life">50</b>歳</div>
@@ -174,7 +186,29 @@ const ACTS=[
  {k:'magic', n:'魔法の研究', s:'魔', g:5,   d:'読書の効果が倍に',   u:L=>L.book>=25, uh:'読書 Lv25'},
  {k:'pray',  n:'星への祈り', s:'祈', g:0,   d:'この人生の寿命がのびる', u:L=>L.magic>=10, uh:'魔法の研究 Lv10'},
  {k:'king',  n:'王の政務',   s:'王', g:120, d:'国を治めて大もうけ', u:L=>L.trade>=30&&L.adv>=25&&L.magic>=25, uh:'行商30・冒険25・魔法25'},
+ {k:'fish',  st:1, n:'釣り',       s:'釣', g:6,     d:'のんびり金貨',         u:L=>L.farm>=5, uh:'畑仕事 Lv5'},
+ {k:'ship',  st:1, n:'船の交易',   s:'船', g:260,   d:'海を越えて大もうけ',   u:L=>L.trade>=20&&L.fish>=10, uh:'行商20・釣り10'},
+ {k:'music', st:2, n:'宮廷楽団',   s:'楽', g:0,     d:'すべての上達が早くなる', u:L=>L.book>=15, uh:'読書 Lv15'},
+ {k:'knight',st:2, n:'騎士団',     s:'騎', g:900,   d:'王都を守ってお給金',   u:L=>L.adv>=25&&L.sword>=30, uh:'冒険25・素振り30'},
+ {k:'wind',  st:3, n:'風読み',     s:'風', g:0,     d:'年をとるのがゆっくりに', u:L=>L.magic>=20, uh:'魔法の研究 Lv20'},
+ {k:'cloud', st:3, n:'雲の交易',   s:'雲', g:6000,  d:'空の島どうしを結ぶ',   u:L=>L.ship>=25&&L.wind>=10, uh:'船の交易25・風読み10'},
+ {k:'starread',st:4,n:'星詠み',    s:'星', g:0,     d:'記憶のかけらが多くもらえる', u:L=>L.pray>=15, uh:'星への祈り Lv15'},
+ {k:'starking',st:4,n:'星の海の王',s:'冠', g:90000, d:'星々を治める',         u:L=>L.king>=30&&L.cloud>=20, uh:'王の政務30・雲の交易20'},
 ];
+const STAGES=[
+ {n:'村',     thr:0,   c:'#5f8a3a', hi:'畑と小川のある、小さな村'},
+ {n:'港町',   thr:20,  c:'#2f73a8', hi:'潮風と船の汽笛がひびく港町'},
+ {n:'王都',   thr:100, c:'#a24e6a', hi:'お城と市場がにぎわう王都'},
+ {n:'空の島', thr:400, c:'#a8760f', hi:'雲の上にうかぶ空の島'},
+ {n:'星の海', thr:1000,c:'#5b4fb0', hi:'星々が波のようにゆれる星の海'},
+];
+const stage=()=>S.meta.stage||0;
+const stGold=()=>Math.pow(2,stage()), stExp=()=>Math.pow(1.5,stage());
+const STAGE_EV=[[],
+ [['港で珍しい貝を見つけた',1],['カモメにパンを取られた',0],['船乗りに海の歌を教わった',0],['灯台のてっぺんから夕日を見た',0]],
+ [['王都のパレードを見物した',0],['お城の庭師と友だちになった',0],['王様の落とし物を届けてお礼をもらった',3],['大聖堂の鐘の音で目が覚めた',0]],
+ [['雲の上で昼寝した',0],['風に乗る鳥と並んで歩いた',0],['空から金色の羽が降ってきた',2],['虹のはしっこを見つけた',0]],
+ [['星の海で流れ星をすくった',2],['遠い星の住人と手紙をやりとりした',0],['銀河の灯台守と夜通し話した',0],['月のうさぎにお餅をもらった',0]]];
 const ITEMS=[
  {k:'hat',   n:'わら帽子',       c:40,    d:'畑仕事の稼ぎ ×2'},
  {k:'woodsw',n:'木刀',           c:150,   d:'素振りの上達 ×1.5'},
@@ -217,7 +251,7 @@ function load(){
 function save(){S.savedAt=Date.now(); try{localStorage.setItem(SAVE,JSON.stringify(S))}catch(e){}}
 
 const lifespan=()=>50+S.meta.up.life*5+S.life.lv.pray*0.25;
-const ageRate=()=>(1-0.1*S.meta.up.slow)/YEAR_SEC;
+const ageRate=()=>(1-0.1*S.meta.up.slow)/YEAR_SEC/(1+0.01*(S.life.lv.wind||0));
 const req=lv=>Math.floor(40*Math.pow(1.13,lv));
 const has=k=>!!S.life.items[k];
 function expMult(k){
@@ -227,14 +261,15 @@ function expMult(k){
   if(k==='sword'&&has('woodsw'))m*=1.5; if(k==='book'&&has('candle'))m*=1.5;
   if(k==='adv'){m*=1+0.02*L.sword; if(has('armor'))m*=1.5}
   if(k==='magic'&&has('orb'))m*=2;
+  m*=1+0.01*(L.music||0); m*=stExp();
   return m;
 }
 function goldRate(k){
   const a=ACTS.find(x=>x.k===k); let g=a.g*(1+0.15*S.life.lv[k]);
   if(k==='farm'&&has('hat'))g*=2; if(k==='trade'&&has('cart'))g*=2; if(k==='king'&&has('castle'))g*=2;
-  return g;
+  return g*stGold();
 }
-const unlocked=a=>a.u(S.life.lv);
+const unlocked=a=>stage()>=(a.st||0)&&a.u(S.life.lv);
 const totalLv=()=>Object.values(S.life.lv).reduce((a,b)=>a+b,0);
 function title(){let t=TITLES[0][1]; TITLES.forEach(([n,x])=>{if(totalLv()>=n)t=x}); return t}
 
@@ -254,7 +289,7 @@ function step(dt){
   L.gold+=goldRate(a.k)*dt;
   ACTS.forEach(x=>{if(!L.seen[x.k]&&unlocked(x)){L.seen[x.k]=1;addLog(`「${x.n}」ができるようになった！`,true);toast(`「${x.n}」が解放されました`)}});
   if(Math.floor(L.age)>prevYear&&Math.random()<0.3){
-    const e=EVENTS[Math.floor(Math.random()*EVENTS.length)];
+    const pool=EVENTS.concat(STAGE_EV[stage()]||[]); const e=pool[Math.floor(Math.random()*pool.length)];
     if(e[1]){const g=Math.ceil((goldRate(L.act)+1)*YEAR_SEC*e[1]);L.gold+=g;addLog(`${e[0]}（金貨+${fmt(g)}）`)}else addLog(e[0]);
   }
   autoT+=dt;
@@ -287,22 +322,33 @@ function autoBuy(){ITEMS.forEach(i=>{if(!S.life.items[i.k]&&S.life.gold>=i.c){S.
 
 function die(){
   const L=S.life, M=S.meta;
-  const gain=Math.max(1,Math.floor(totalLv()/12)+Math.floor(L.age/15)+(L.lv.king>0?5:0));
+  const gain=Math.max(1,Math.floor((totalLv()/12+L.age/15+(L.lv.king>0?5:0))*(1+0.02*(L.lv.starread||0))));
   ACTS.forEach(a=>{M.talent[a.k]=Math.max(M.talent[a.k],L.lv[a.k])});
-  M.mem+=gain;
+  M.mem+=gain; M.memTotal=(M.memTotal||0)+gain;
+  const st0=stage(); advanceStage();
+  S.stageUp=stage()>st0?STAGES[stage()].n:null;
+  if(S.stageUp)toast(`${S.stageUp}にたどり着いた！`);
   if(S.autoUp)autoUpgrade();
   const bestA=ACTS.reduce((b,a)=>L.lv[a.k]>L.lv[b.k]?a:b,ACTS[0]);
-  M.lives.unshift({no:M.lifeNo,age:Math.floor(L.age),title:title(),best:`${bestA.n} Lv${L.lv[bestA.k]}`,gain});
+  M.lives.unshift({st:st0,no:M.lifeNo,age:Math.floor(L.age),title:title(),best:`${bestA.n} Lv${L.lv[bestA.k]}`,gain});
   if(M.lives.length>30)M.lives.pop();
   addLog(`${Math.floor(L.age)}歳で静かに生涯を終えた`,true);
-  S.dead=true; S.lastGain=gain; S.rebT=3; save(); showDeath(); renderPane();
+  S.dead=true; S.lastGain=gain; S.rebT=S.stageUp?6:3; save(); showDeath(); renderPane();
 }
 function rebirth(){
   S.meta.lifeNo++; S.life=freshLife(S.meta); S.dead=false;
-  addLog(`第${S.meta.lifeNo}の人生がはじまった。前世の記憶がうっすら残っている`,true);
+  if(S.stageUp){addLog(`${STAGES[stage()].hi}で、第${S.meta.lifeNo}の人生がはじまった`,true)}
+  else addLog(`第${S.meta.lifeNo}の人生がはじまった。前世の記憶がうっすら残っている`,true);
+  S.stageUp=null;
   $('veil').hidden=true; renderPane(); save();
 }
 
+function advanceStage(){
+  const M=S.meta; M.stage=M.stage||0;
+  while(M.stage<STAGES.length-1&&(M.memTotal||0)>=STAGES[M.stage+1].thr)M.stage++;
+  applyStage();
+}
+function applyStage(){try{document.documentElement.style.setProperty('--stage',STAGES[stage()].c)}catch(e){}}
 /* ---------- view ---------- */
 const $=id=>document.getElementById(id);
 function fmt(n){n=Math.floor(n); if(n<1e4)return n.toLocaleString('ja-JP'); if(n<1e8)return (n/1e4).toFixed(n<1e5?1:0)+'万'; if(n<1e12)return (n/1e8).toFixed(1)+'億'; return (n/1e12).toFixed(1)+'兆'}
@@ -332,12 +378,18 @@ function render(){
   $('rfill').style.width=(p*100)+'%'; $('rme').style.left=Math.min(96,Math.max(4,p*100))+'%'; $('rme').textContent=Math.floor(L.age)+'歳';
   $('age').textContent=Math.floor(L.age); $('life').textContent=Math.floor(ls);
   $('title').textContent='肩書き：'+title();
+  const st=stage(), nx=STAGES[st+1], cur=STAGES[st], tot=M.memTotal||0;
+  $('stName').textContent=cur.n;
+  const bonus=st?`稼ぎ ×${fmt(stGold())}・上達 ×${stExp().toFixed(1)} ／ `:'';
+  if(nx){$('stFill').style.width=Math.min(100,(tot-cur.thr)/(nx.thr-cur.thr)*100)+'%'; $('stNext').textContent=`${bonus}次の舞台「${nx.n}」まで 記憶のかけら ${fmt(tot)} / ${fmt(nx.thr)}`}
+  else{$('stFill').style.width='100%'; $('stNext').textContent=`${bonus}最後の舞台にたどり着きました`}
   ACTS.forEach(a=>{
     const e=actEls[a.k], ok=unlocked(a);
+    const far=(a.st||0)>st+1; e.b.hidden=far; if(far)return;
     e.b.disabled=!ok; e.b.classList.toggle('on',L.act===a.k&&!S.dead);
     e.lv.textContent=L.lv[a.k];
     e.lock.hidden=ok; e.barW.hidden=!ok;
-    if(!ok){e.lock.textContent='解放条件：'+a.uh; e.em.textContent=''}
+    if(!ok){e.lock.textContent=(a.st||0)>st?`「${STAGES[a.st].n}」に着くと解放`:'解放条件：'+a.uh; e.em.textContent=''}
     else{
       e.bar.style.width=(L.exp[a.k]/req(L.lv[a.k])*100)+'%';
       const tal=M.talent[a.k]?` ・才能${M.talent[a.k]}`:'';
@@ -398,7 +450,7 @@ function renderPane(){
     });
   }else{
     if(!S.meta.lives.length)p.insertAdjacentHTML('beforeend','<p class="note">まだ最初の人生の途中です。寿命をむかえると、ここに記録が残ります。</p>');
-    S.meta.lives.forEach(v=>p.insertAdjacentHTML('beforeend',`<div class="past"><b>第${v.no}</b><span>${v.title}・${v.best}</span><span class="num">${v.age}歳 ／ +${v.gain}</span></div>`));
+    S.meta.lives.forEach(v=>p.insertAdjacentHTML('beforeend',`<div class="past"><b>第${v.no}</b><span>${STAGES[v.st||0].n}・${v.title}・${v.best}</span><span class="num">${v.age}歳 ／ +${v.gain}</span></div>`));
   }
   refreshButtons();
 }
@@ -418,7 +470,7 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
 
 function showDeath(){
   const v=S.meta.lives[0];
-  $('dcard').innerHTML=`<h2>第${v.no}の人生、おしまい</h2>
+  $('dcard').innerHTML=`${S.stageUp?`<p class="arrive">${S.stageUp}にたどり着いた！</p><p>${STAGES[stage()].hi}。次の人生はここから始まります。</p>`:''}<h2>第${v.no}の人生、おしまい</h2>
    <p>${v.age}歳まで生きて「${v.title}」と呼ばれました。<br>いちばん得意だったのは ${v.best}。</p>
    <p class="gain num">記憶のかけら +${v.gain}</p>
    <p>覚えた技は才能として次の人生に残ります。</p>${S.autoReb?'<p>まもなく自動で生まれ変わります</p>':''}
@@ -438,11 +490,17 @@ function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');cle
 
 /* ---------- boot ---------- */
 function start(hotData){
+  let loaded=false;
   if(hotData&&hotData.S)S=hotData.S;
-  else if(!load())newGame();
+  else if(load())loaded=true;
+  else newGame();
   if(S.autoReb===undefined)S.autoReb=true;
   if(S.autoUp===undefined)S.autoUp=true;
-  else{ // offline progress, up to 2 hours
+  {const M=S.meta; M.stage=M.stage||0;
+   if(M.memTotal===undefined){let spent=0; UPS.forEach(u=>{for(let l=0;l<(M.up[u.k]||0);l++)spent+=u.cost(l)}); M.memTotal=M.mem+spent}
+   ACTS.forEach(a=>{if(S.life.lv[a.k]===undefined){S.life.lv[a.k]=0;S.life.exp[a.k]=0} if(M.talent[a.k]===undefined)M.talent[a.k]=0});
+   advanceStage();}
+  if(loaded){ // offline progress, up to 2 hours
     let away=Math.min(7200,(Date.now()-(S.savedAt||Date.now()))/1000);
     if(away>30&&!(S.dead&&!S.autoReb)){const g0=S.life.gold; while(away>0&&!(S.dead&&!S.autoReb)){step(Math.min(1,away));away-=1}
       if(!S.dead)toast(`留守のあいだに 金貨+${fmt(S.life.gold-g0)}`)}
