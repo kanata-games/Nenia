@@ -422,7 +422,7 @@ function renderPane(){
     S.life.log.forEach(l=>ul.insertAdjacentHTML('beforeend',`<li class="${l.b?'big':''}"><span class="num">${l.a}歳</span>${l.t}</li>`));
     p.appendChild(ul);
   }else if(curTab==='save'){
-    p.insertAdjacentHTML('beforeend',`<p class="note">データはこのブラウザに自動で保存されています。別の端末やブラウザに移すとき、念のための控えを取るときは「セーブコード」を使ってください。</p>
+    p.insertAdjacentHTML('beforeend',`<p class="note">データはこのブラウザに自動で保存されています。ページを閉じていても、最大12時間ぶんは次に開いたときにまとめて進みます。別の端末やブラウザに移すとき、念のための控えを取るときは「セーブコード」を使ってください。</p>
      <div class="savebox">
       <button class="big-btn" id="svCopy">セーブコードをコピー</button>
       <textarea id="svCode" rows="4" placeholder="ここにセーブコードを貼りつけて「読み込む」を押す"></textarea>
@@ -501,9 +501,15 @@ function start(hotData){
    ACTS.forEach(a=>{if(S.life.lv[a.k]===undefined){S.life.lv[a.k]=0;S.life.exp[a.k]=0} if(M.talent[a.k]===undefined)M.talent[a.k]=0});
    advanceStage();}
   if(loaded){ // offline progress, up to 2 hours
-    let away=Math.min(7200,(Date.now()-(S.savedAt||Date.now()))/1000);
-    if(away>30&&!(S.dead&&!S.autoReb)){const g0=S.life.gold; while(away>0&&!(S.dead&&!S.autoReb)){step(Math.min(1,away));away-=1}
-      if(!S.dead)toast(`留守のあいだに 金貨+${fmt(S.life.gold-g0)}`)}
+    let away=Math.min(43200,(Date.now()-(S.savedAt||Date.now()))/1000);
+    if(away>30&&!(S.dead&&!S.autoReb)){
+      const g0=S.life.gold, n0=S.meta.lifeNo, st0=stage();
+      while(away>0&&!(S.dead&&!S.autoReb)){step(Math.min(1,away));away-=1}
+      const lives=S.meta.lifeNo-n0;
+      setTimeout(()=>toast(stage()>st0?`留守のあいだに「${STAGES[stage()].n}」までたどり着きました`
+        :lives>0?`留守のあいだに 人生が${lives}回めぐりました`
+        :`留守のあいだに 金貨+${fmt(S.life.gold-g0)}`),600);
+    }
   }
   buildActs(); syncToggles(); renderPane(); render();
   if(S.dead)showDeath();
