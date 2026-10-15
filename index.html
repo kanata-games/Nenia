@@ -662,7 +662,11 @@ function makeStars(){
 }
 /* ---------- view ---------- */
 const $=id=>document.getElementById(id);
-function fmt(n){n=Math.floor(n); if(n<1e4)return n.toLocaleString('ja-JP'); if(n<1e8)return (n/1e4).toFixed(n<1e5?1:0)+'万'; if(n<1e12)return (n/1e8).toFixed(1)+'億'; if(n<1e16)return (n/1e12).toFixed(1)+'兆'; if(n<1e20)return (n/1e16).toFixed(1)+'京'; if(n<1e24)return (n/1e20).toFixed(1)+'垓'; return n.toExponential(2)}
+function fmt(n){n=Math.floor(n); if(!isFinite(n))return '∞'; if(n<1e4)return n.toLocaleString('ja-JP');
+  const U=['万','億','兆','京','垓','秭','穣','溝','澗','正','載','極','恒河沙','阿僧祇','那由他','不可思議','無量大数'];
+  let k=Math.min(U.length,Math.floor(Math.log10(n)/4)); const v=n/Math.pow(10,4*k);
+  if(k===U.length&&v>=1e4)return (n/1e68).toExponential(1).replace('e+','e')+'無量大数';
+  return (v<10?v.toFixed(1):Math.floor(v))+U[k-1]}
 
 const actEls={};
 function buildActs(){
