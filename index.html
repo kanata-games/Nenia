@@ -41,7 +41,12 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
 .purse div{display:flex;flex-direction:column;align-items:flex-end}
 .purse b{font-size:1.25rem}
 .purse span{font-size:.72rem;color:var(--muted);letter-spacing:.08em}
-.gold b{color:var(--accent)} .star b{color:var(--teal)} .drop b{color:#6a5fc4}
+.gold b{color:var(--accent)} .star b{color:var(--teal)} .drop b{color:#6a5fc4} .page b{color:#b0702a}
+.dex-h{font-weight:700;margin:6px 2px 0;font-size:.9rem;display:flex;justify-content:space-between}
+.dex-h span{color:var(--muted);font-weight:500;font-size:.8rem}
+.dex-grid{display:flex;flex-wrap:wrap;gap:6px}
+.dex-grid span{padding:3px 10px;border-radius:999px;background:var(--bg);font-size:.78rem}
+.dex-grid span.no{color:var(--muted);opacity:.55}
 
 .stage{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
 .chip{font-family:var(--display);background:var(--stage);color:#fff;border-radius:999px;padding:2px 16px;font-size:1.05rem;transition:background .8s}
@@ -191,6 +196,7 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
         <div class="gold"><b class="num" id="gold">0</b><span>金貨</span></div>
         <div class="star"><b class="num" id="mem">0</b><span>記憶のかけら</span></div>
         <div class="drop" id="dropBox" hidden><b class="num" id="drop">0</b><span>星のしずく</span></div>
+        <div class="page" id="pageBox" hidden><b class="num" id="pageN">0</b><span>物語の頁</span></div>
       </div>
     </div>
     <div class="stage">
@@ -209,6 +215,7 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
       <button class="tg" id="tgReb" aria-pressed="true">うまれかわり自動</button>
       <button class="tg" id="tgUp" aria-pressed="true">転生の泉 自動</button>
       <button class="tg" id="tgStar" aria-pressed="true">星還り 自動</button>
+      <button class="tg" id="tgPage" aria-pressed="true">新しい巻 自動</button>
       <button class="tg" id="tgSpeed" aria-pressed="false">はやおくり ×2</button>
     </div>
   </header>
@@ -221,6 +228,8 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
         <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3cdbd"/><stop offset="1" stop-color="#fbf0e3"/></linearGradient>
         <linearGradient id="sky3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fc0ee"/><stop offset="1" stop-color="#e3f2fc"/></linearGradient>
         <linearGradient id="sky4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#121736"/><stop offset="1" stop-color="#3d306f"/></linearGradient>
+        <linearGradient id="sky5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2850"/><stop offset="1" stop-color="#4c5f96"/></linearGradient>
+        <linearGradient id="sky6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6dc"/><stop offset="1" stop-color="#ffdca0"/></linearGradient>
         <radialGradient id="glowG"><stop offset="0" stop-color="#fff6c8" stop-opacity=".85"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></radialGradient>
       </defs>
       <rect id="skyRect" width="960" height="180" fill="url(#sky0)"/>
@@ -261,6 +270,17 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
         <circle cx="830" cy="42" r="20" fill="#fff3c4"/><circle cx="840" cy="36" r="17" fill="#121736" opacity=".9"/>
         <rect y="148" width="960" height="32" fill="#2c2560"/><path d="M0 156 q30 -5 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0" stroke="#8f84e0" stroke-width="1.5" fill="none"/>
       </g>
+      <g id="sc5" style="display:none">
+        <g fill="#fff"><circle class="twinkle" cx="0" cy="0" r="1.2" style="animation-delay:-0.0s"/><circle class="twinkle" cx="97" cy="42" r="1.2" style="animation-delay:-0.5s"/><circle class="twinkle" cx="195" cy="84" r="1.2" style="animation-delay:-1.0s"/><circle class="twinkle" cx="292" cy="16" r="1.2" style="animation-delay:-1.5s"/><circle class="twinkle" cx="389" cy="58" r="1.2" style="animation-delay:-2.0s"/><circle class="twinkle" cx="486" cy="100" r="1.2" style="animation-delay:-2.5s"/><circle class="twinkle" cx="584" cy="31" r="1.2" style="animation-delay:-0.0s"/><circle class="twinkle" cx="681" cy="73" r="1.2" style="animation-delay:-0.5s"/><circle class="twinkle" cx="778" cy="5" r="1.2" style="animation-delay:-1.0s"/><circle class="twinkle" cx="876" cy="47" r="1.2" style="animation-delay:-1.5s"/><circle class="twinkle" cx="13" cy="89" r="1.2" style="animation-delay:-2.0s"/><circle class="twinkle" cx="110" cy="21" r="1.2" style="animation-delay:-2.5s"/><circle class="twinkle" cx="208" cy="63" r="1.2" style="animation-delay:-0.0s"/><circle class="twinkle" cx="305" cy="105" r="1.2" style="animation-delay:-0.5s"/><circle class="twinkle" cx="402" cy="37" r="1.2" style="animation-delay:-1.0s"/><circle class="twinkle" cx="500" cy="78" r="1.2" style="animation-delay:-1.5s"/><circle class="twinkle" cx="597" cy="10" r="1.2" style="animation-delay:-2.0s"/><circle class="twinkle" cx="694" cy="52" r="1.2" style="animation-delay:-2.5s"/><circle class="twinkle" cx="791" cy="94" r="1.2" style="animation-delay:-0.0s"/><circle class="twinkle" cx="889" cy="26" r="1.2" style="animation-delay:-0.5s"/><circle class="twinkle" cx="26" cy="68" r="1.2" style="animation-delay:-1.0s"/><circle class="twinkle" cx="123" cy="110" r="1.2" style="animation-delay:-1.5s"/><circle class="twinkle" cx="221" cy="42" r="1.2" style="animation-delay:-2.0s"/><circle class="twinkle" cx="318" cy="84" r="1.2" style="animation-delay:-2.5s"/><circle class="twinkle" cx="415" cy="16" r="1.2" style="animation-delay:-0.0s"/><circle class="twinkle" cx="512" cy="58" r="1.2" style="animation-delay:-0.5s"/><circle class="twinkle" cx="610" cy="99" r="1.2" style="animation-delay:-1.0s"/><circle class="twinkle" cx="707" cy="31" r="1.2" style="animation-delay:-1.5s"/></g>
+        <circle cx="760" cy="56" r="36" fill="#f6f2dc"/><circle cx="748" cy="48" r="6" fill="#e6e0c2"/><circle cx="772" cy="66" r="4" fill="#e6e0c2"/>
+        <rect y="146" width="960" height="34" fill="#34437a"/>
+        <g fill="#dfe6ff"><circle class="twinkle" cx="30" cy="146" r="3.4" style="animation-delay:-0.0s"/><path d="M30 150 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="88" cy="148" r="3.4" style="animation-delay:-1.7999999999999998s"/><path d="M88 152 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="146" cy="150" r="3.4" style="animation-delay:-0.6s"/><path d="M146 154 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="204" cy="145" r="3.4" style="animation-delay:-2.4s"/><path d="M204 149 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="262" cy="147" r="3.4" style="animation-delay:-1.2s"/><path d="M262 151 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="320" cy="149" r="3.4" style="animation-delay:-0.0s"/><path d="M320 153 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="378" cy="144" r="3.4" style="animation-delay:-1.7999999999999998s"/><path d="M378 148 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="436" cy="146" r="3.4" style="animation-delay:-0.6s"/><path d="M436 150 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="494" cy="148" r="3.4" style="animation-delay:-2.4s"/><path d="M494 152 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="552" cy="150" r="3.4" style="animation-delay:-1.2s"/><path d="M552 154 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="610" cy="145" r="3.4" style="animation-delay:-0.0s"/><path d="M610 149 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="668" cy="147" r="3.4" style="animation-delay:-1.7999999999999998s"/><path d="M668 151 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="726" cy="149" r="3.4" style="animation-delay:-0.6s"/><path d="M726 153 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="784" cy="144" r="3.4" style="animation-delay:-2.4s"/><path d="M784 148 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="842" cy="146" r="3.4" style="animation-delay:-1.2s"/><path d="M842 150 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="900" cy="148" r="3.4" style="animation-delay:-0.0s"/><path d="M900 152 v10" stroke="#8fa0d8" stroke-width="1.4"/><circle class="twinkle" cx="958" cy="150" r="3.4" style="animation-delay:-1.7999999999999998s"/><path d="M958 154 v10" stroke="#8fa0d8" stroke-width="1.4"/></g>
+      </g>
+      <g id="sc6" style="display:none">
+        <g fill="#fff" opacity=".35"><polygon points="480,-20 -260,200 -180,200"/><polygon points="480,-20 -85,200 -5,200"/><polygon points="480,-20 90,200 170,200"/><polygon points="480,-20 265,200 345,200"/><polygon points="480,-20 440,200 520,200"/><polygon points="480,-20 615,200 695,200"/><polygon points="480,-20 790,200 870,200"/><polygon points="480,-20 965,200 1045,200"/><polygon points="480,-20 1140,200 1220,200"/></g>
+        <g fill="#fffbe8"><circle class="twinkle" cx="0" cy="20" r="2" style="animation-delay:-0.0s"/><circle class="twinkle" cx="124" cy="57" r="3" style="animation-delay:-0.6s"/><circle class="twinkle" cx="247" cy="95" r="4" style="animation-delay:-1.2s"/><circle class="twinkle" cx="371" cy="22" r="2" style="animation-delay:-1.7999999999999998s"/><circle class="twinkle" cx="495" cy="59" r="3" style="animation-delay:-2.4s"/><circle class="twinkle" cx="618" cy="96" r="4" style="animation-delay:-0.0s"/><circle class="twinkle" cx="742" cy="24" r="2" style="animation-delay:-0.6s"/><circle class="twinkle" cx="866" cy="61" r="3" style="animation-delay:-1.2s"/><circle class="twinkle" cx="30" cy="98" r="4" style="animation-delay:-1.7999999999999998s"/><circle class="twinkle" cx="153" cy="26" r="2" style="animation-delay:-2.4s"/><circle class="twinkle" cx="277" cy="63" r="3" style="animation-delay:-0.0s"/><circle class="twinkle" cx="401" cy="100" r="4" style="animation-delay:-0.6s"/><circle class="twinkle" cx="524" cy="28" r="2" style="animation-delay:-1.2s"/><circle class="twinkle" cx="648" cy="65" r="3" style="animation-delay:-1.7999999999999998s"/><circle class="twinkle" cx="772" cy="102" r="4" style="animation-delay:-2.4s"/><circle class="twinkle" cx="896" cy="30" r="2" style="animation-delay:-0.0s"/><circle class="twinkle" cx="59" cy="67" r="3" style="animation-delay:-0.6s"/><circle class="twinkle" cx="183" cy="104" r="4" style="animation-delay:-1.2s"/><circle class="twinkle" cx="307" cy="31" r="2" style="animation-delay:-1.7999999999999998s"/><circle class="twinkle" cx="430" cy="69" r="3" style="animation-delay:-2.4s"/><circle class="twinkle" cx="554" cy="106" r="4" style="animation-delay:-0.0s"/><circle class="twinkle" cx="678" cy="33" r="2" style="animation-delay:-0.6s"/></g>
+        <rect y="148" width="960" height="32" fill="#f3dca6"/><path d="M0 154 H960" stroke="#fff3cf" stroke-width="3"/>
+      </g>
       <g id="hero" transform="translate(480 150)">
         <g id="heroIn">
           <circle class="glow" cx="0" cy="-64" r="70"/>
@@ -298,6 +318,8 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
         <button class="tab" role="tab" data-t="shop" aria-selected="true">お店</button>
         <button class="tab" role="tab" data-t="reb" aria-selected="false">転生の泉</button>
         <button class="tab" role="tab" data-t="starr" aria-selected="false">星還り</button>
+        <button class="tab" role="tab" data-t="page" aria-selected="false">新しい巻</button>
+        <button class="tab" role="tab" data-t="dex" aria-selected="false">図鑑</button>
         <button class="tab" role="tab" data-t="log" aria-selected="false">年代記</button>
         <button class="tab" role="tab" data-t="past" aria-selected="false">歴代の人生</button>
         <button class="tab" role="tab" data-t="save" aria-selected="false">セーブ</button>
@@ -331,6 +353,10 @@ const ACTS=[
  {k:'cloud', st:3, n:'雲の交易',   s:'雲', g:6000,  d:'空の島どうしを結ぶ',   u:L=>L.ship>=25&&L.wind>=10, uh:'船の交易25・風読み10'},
  {k:'starread',st:4,n:'星詠み',    s:'星', g:0,     d:'記憶のかけらが多くもらえる', u:L=>L.pray>=15, uh:'星への祈り Lv15'},
  {k:'starking',st:4,n:'星の海の王',s:'冠', g:90000, d:'星々を治める',         u:L=>L.king>=30&&L.cloud>=20, uh:'王の政務30・雲の交易20'},
+ {k:'moonfl',st:5, n:'月の花摘み', s:'月', g:3e6,   d:'銀の花を集める',       u:L=>L.starking>=20, uh:'星の海の王 Lv20'},
+ {k:'dream', st:5, n:'夢見',       s:'夢', g:0,     d:'すべての稼ぎが増える', u:L=>L.starread>=20, uh:'星詠み Lv20'},
+ {k:'weave', st:6, n:'光の紡ぎ',   s:'紡', g:2e8,   d:'物語の糸を紡ぐ',       u:L=>L.moonfl>=25, uh:'月の花摘み Lv25'},
+ {k:'tune',  st:6, n:'時の調律',   s:'時', g:0,     d:'寿命がのびる',         u:L=>L.dream>=20, uh:'夢見 Lv20'},
 ];
 const STAGES=[
  {n:'村',     thr:0,   c:'#5f8a3a', hi:'畑と小川のある、小さな村'},
@@ -338,6 +364,8 @@ const STAGES=[
  {n:'王都',   thr:100, c:'#a24e6a', hi:'お城と市場がにぎわう王都'},
  {n:'空の島', thr:400, c:'#a8760f', hi:'雲の上にうかぶ空の島'},
  {n:'星の海', thr:1000,c:'#5b4fb0', hi:'星々が波のようにゆれる星の海'},
+ {n:'月の庭', thr:2500,c:'#4a6a9a', hi:'銀の花が咲く、静かな月の庭'},
+ {n:'はじまりの光', thr:6000,c:'#c0902a', hi:'すべての物語が生まれる、はじまりの光'},
 ];
 const stage=()=>S.meta.stage||0;
 const SUPS=[
@@ -347,19 +375,33 @@ const SUPS=[
  {k:'road', n:'近道の星図',   d:'舞台に必要なかけら -15%（最大4）', cost:l=>3+l*3, max:4},
 ];
 const sup=k=>(S.meta.sup&&S.meta.sup[k])||0;
+const PUPS=[
+ {k:'art',  n:'挿絵',           d:'稼ぎと上達 ×3',                         cost:l=>1+l},
+ {k:'pen',  n:'語り部の筆',     d:'星のしずく ×1.5',                       cost:l=>1+l},
+ {k:'after',n:'あとがき',       d:'寿命 +15歳',                            cost:l=>1+l},
+ {k:'open', n:'書き出しの一行', d:'リセット後、1つ先の舞台から始まる（最大3）', cost:l=>2+l*2, max:3},
+];
+const pg=k=>(S.meta.pup&&S.meta.pup[k])||0;
+const pageMult=()=>(1+0.25*(S.meta.pageTotal||0))*Math.pow(3,pg('art'));
+const pageGain=()=>stage()>=4?Math.floor(Math.sqrt((S.meta.starTotal||0)/5)):0;
+const wantAutoPage=()=>S.autoPage&&stage()>=4&&pageGain()>=Math.max(1,S.meta.pageTotal||0);
+function dexAdd(cat,key){const M=S.meta; if(!M.dex)return; if(!M.dex[cat][key]){M.dex[cat][key]=1; M.dexN=(M.dexN||0)+1}}
+const allEvents=()=>EVENTS.concat(...STAGE_EV);
 const starMult=()=>1+0.1*(S.meta.starTotal||0);
 const thr=i=>Math.ceil(STAGES[i].thr*(1-0.15*sup('road')));
-const starGain=()=>stage()>=2?Math.floor(Math.sqrt((S.meta.memTotal||0)/20)):0;
+const starGain=()=>stage()>=2?Math.floor(Math.sqrt((S.meta.memTotal||0)/20)*Math.pow(1.5,pg('pen'))):0;
 const wantAutoStar=()=>S.autoStar&&stage()>=2&&starGain()>=Math.max(2,S.meta.starTotal||0);
 const LOOK={farm:['work','hoe','sprout'],sword:['work','sword',''],book:['sit','book',''],trade:['walk','bag',''],adv:['walk','',''],
  magic:['cast','','spark'],pray:['pray','','spark'],king:['wave','',''],fish:['sit','rod','ripple'],ship:['walk','bag',''],
- music:['strum','lute','note'],knight:['walk','sword',''],wind:['cast','','leaf'],cloud:['walk','bag',''],starread:['sit','scope','spark'],starking:['wave','','spark']};
+ music:['strum','lute','note'],knight:['walk','sword',''],wind:['cast','','leaf'],cloud:['walk','bag',''],starread:['sit','scope','spark'],starking:['wave','','spark'],moonfl:['work','','sprout'],dream:['sit','','spark'],weave:['cast','','spark'],tune:['pray','','note']};
 const stGold=()=>Math.pow(2,stage()), stExp=()=>Math.pow(1.5,stage());
 const STAGE_EV=[[],
  [['港で珍しい貝を見つけた',1],['カモメにパンを取られた',0],['船乗りに海の歌を教わった',0],['灯台のてっぺんから夕日を見た',0]],
  [['王都のパレードを見物した',0],['お城の庭師と友だちになった',0],['王様の落とし物を届けてお礼をもらった',3],['大聖堂の鐘の音で目が覚めた',0]],
  [['雲の上で昼寝した',0],['風に乗る鳥と並んで歩いた',0],['空から金色の羽が降ってきた',2],['虹のはしっこを見つけた',0]],
- [['星の海で流れ星をすくった',2],['遠い星の住人と手紙をやりとりした',0],['銀河の灯台守と夜通し話した',0],['月のうさぎにお餅をもらった',0]]];
+ [['星の海で流れ星をすくった',2],['遠い星の住人と手紙をやりとりした',0],['銀河の灯台守と夜通し話した',0],['月のうさぎにお餅をもらった',0]],
+ [['銀の花で冠を編んだ',0],['月の泉に自分の顔が映った',0],['眠れない月の子に子守歌を歌った',0],['花の蜜が金色に光った',3]],
+ [['光の中で、むかしの自分に手をふった',0],['物語の最初の一文字を見つけた',0],['光の糸がほどけて歌になった',0],['まぶしい朝がずっと続いた',2]]];
 const ITEMS=[
  {k:'hat',   n:'わら帽子',       c:40,    d:'畑仕事の稼ぎ ×2'},
  {k:'woodsw',n:'木刀',           c:150,   d:'素振りの上達 ×1.5'},
@@ -390,9 +432,9 @@ function freshLife(meta){
 }
 let S;
 function newGame(){
-  const meta={star:0,starTotal:0,starNo:0,sup:{},mem:0,talent:{},up:{life:0,exp:0,inh:0,slow:0},lives:[],lifeNo:1};
+  const meta={page:0,pageTotal:0,vol:1,pup:{},dex:{st:{0:1},ac:{farm:1},ti:{},ev:{}},dexN:2,star:0,starTotal:0,starNo:0,sup:{},mem:0,talent:{},up:{life:0,exp:0,inh:0,slow:0},lives:[],lifeNo:1};
   ACTS.forEach(a=>meta.talent[a.k]=0);
-  S={meta,life:freshLife(null),auto:true,autoShop:true,autoReb:true,autoUp:true,autoStar:true,speed:1,dead:false,savedAt:Date.now()};
+  S={meta,life:freshLife(null),auto:true,autoShop:true,autoReb:true,autoUp:true,autoStar:true,autoPage:true,speed:1,dead:false,savedAt:Date.now()};
   addLog('この世に生まれ落ちた。まずは畑を手伝おう',true);
 }
 function load(){
@@ -401,7 +443,7 @@ function load(){
 }
 function save(){S.savedAt=Date.now(); try{localStorage.setItem(SAVE,JSON.stringify(S))}catch(e){}}
 
-const lifespan=()=>50+S.meta.up.life*5+S.life.lv.pray*0.25;
+const lifespan=()=>50+S.meta.up.life*5+S.life.lv.pray*0.25+15*pg('after')+0.3*(S.life.lv.tune||0);
 const ageRate=()=>(1-0.1*S.meta.up.slow)/YEAR_SEC/(1+0.01*(S.life.lv.wind||0));
 const req=lv=>Math.floor(40*Math.pow(1.13,lv));
 const has=k=>!!S.life.items[k];
@@ -412,13 +454,13 @@ function expMult(k){
   if(k==='sword'&&has('woodsw'))m*=1.5; if(k==='book'&&has('candle'))m*=1.5;
   if(k==='adv'){m*=1+0.02*L.sword; if(has('armor'))m*=1.5}
   if(k==='magic'&&has('orb'))m*=2;
-  m*=1+0.01*(L.music||0); m*=stExp()*starMult()*Math.pow(1.5,sup('bless'));
+  m*=1+0.01*(L.music||0); m*=stExp()*starMult()*Math.pow(1.5,sup('bless'))*pageMult()*(1+0.01*(S.meta.dexN||0));
   return m;
 }
 function goldRate(k){
   const a=ACTS.find(x=>x.k===k); let g=a.g*(1+0.15*S.life.lv[k]);
   if(k==='farm'&&has('hat'))g*=2; if(k==='trade'&&has('cart'))g*=2; if(k==='king'&&has('castle'))g*=2;
-  return g*stGold()*starMult()*Math.pow(2,sup('gold'));
+  return g*stGold()*starMult()*Math.pow(2,sup('gold'))*pageMult()*(1+0.02*(S.life.lv.dream||0));
 }
 const unlocked=a=>stage()>=(a.st||0)&&a.u(S.life.lv);
 const totalLv=()=>Object.values(S.life.lv).reduce((a,b)=>a+b,0);
@@ -439,13 +481,13 @@ function step(dt){
     if(L.lv[a.k]%10===0)addLog(`${a.n}が Lv${L.lv[a.k]} になった`);
   }
   L.gold+=goldRate(a.k)*dt;
-  ACTS.forEach(x=>{if(!L.seen[x.k]&&unlocked(x)){L.seen[x.k]=1;addLog(`「${x.n}」ができるようになった！`,true);toast(`「${x.n}」が解放されました`)}});
+  ACTS.forEach(x=>{if(!L.seen[x.k]&&unlocked(x)){L.seen[x.k]=1;dexAdd('ac',x.k);addLog(`「${x.n}」ができるようになった！`,true);toast(`「${x.n}」が解放されました`)}});
   if(Math.floor(L.age)>prevYear&&Math.random()<0.3){
-    const pool=EVENTS.concat(STAGE_EV[stage()]||[]); const e=pool[Math.floor(Math.random()*pool.length)];
+    const pool=EVENTS.concat(STAGE_EV[stage()]||[]); const e=pool[Math.floor(Math.random()*pool.length)]; dexAdd('ev',e[0]);
     if(e[1]){const g=Math.ceil((goldRate(L.act)+1)*YEAR_SEC*e[1]);L.gold+=g;addLog(`${e[0]}（金貨+${fmt(g)}）`)}else addLog(e[0]);
   }
   autoT+=dt;
-  if(autoT>=1){autoT=0; if(S.auto)autoPick(); if(S.autoShop)autoBuy(); if(S.autoUp)autoUpgrade()}
+  if(autoT>=1){autoT=0; dexAdd('ti',title()); if(S.auto)autoPick(); if(S.autoShop)autoBuy(); if(S.autoUp)autoUpgrade()}
   if(L.age>=lifespan())die();
 }
 function autoPick(){
@@ -474,13 +516,19 @@ function autoUpgrade(){
     if(!best||(S.meta.star||0)<bc)break;
     S.meta.star-=bc; S.meta.sup[best.k]=sup(best.k)+1; bought=true;
   }
-  if(bought&&(curTab==='reb'||curTab==='starr'))renderPane();
+  for(;;){
+    let best=null,bc=Infinity;
+    PUPS.forEach(u=>{const l=pg(u.k); if(u.max&&l>=u.max)return; const c=u.cost(l); if(c<bc){bc=c;best=u}});
+    if(!best||(S.meta.page||0)<bc)break;
+    S.meta.page-=bc; S.meta.pup[best.k]=pg(best.k)+1; bought=true;
+  }
+  if(bought&&(curTab==='reb'||curTab==='starr'||curTab==='page'))renderPane();
 }
 function autoBuy(){ITEMS.forEach(i=>{if(!S.life.items[i.k]&&S.life.gold>=i.c){S.life.gold-=i.c;S.life.items[i.k]=1;addLog(`${i.n}を買った`)}})}
 
 function die(){
   const L=S.life, M=S.meta;
-  const gain=Math.max(1,Math.floor((totalLv()/12+L.age/15+(L.lv.king>0?5:0))*(1+0.02*(L.lv.starread||0))*Math.pow(1.5,sup('memo'))));
+  const gain=Math.max(1,Math.floor((totalLv()/12+L.age/15+(L.lv.king>0?5:0))*(1+0.02*(L.lv.starread||0))*Math.pow(1.5,sup('memo'))*(1+0.1*(S.meta.pageTotal||0))));
   ACTS.forEach(a=>{M.talent[a.k]=Math.max(M.talent[a.k],L.lv[a.k])});
   M.mem+=gain; M.memTotal=(M.memTotal||0)+gain;
   const st0=stage(); advanceStage();
@@ -494,6 +542,7 @@ function die(){
   S.dead=true; S.lastGain=gain; S.rebT=S.stageUp?6:3; save(); showDeath(); renderPane();
 }
 function rebirth(){
+  if(wantAutoPage()){newVolume();return}
   if(wantAutoStar()){starReturn();return}
   S.meta.lifeNo++; S.life=freshLife(S.meta); S.dead=false;
   if(S.stageUp){addLog(`${STAGES[stage()].hi}で、第${S.meta.lifeNo}の人生がはじまった`,true)}
@@ -505,14 +554,36 @@ function rebirth(){
 function starReturn(){
   const M=S.meta, g=starGain(); if(g<=0)return;
   M.star=(M.star||0)+g; M.starTotal=(M.starTotal||0)+g; M.starNo=(M.starNo||0)+1;
-  M.mem=0; M.memTotal=0; M.stage=0; UPS.forEach(u=>M.up[u.k]=0); ACTS.forEach(a=>M.talent[a.k]=0);
+  M.mem=0; M.memTotal=0; M.stage=pg('open'); UPS.forEach(u=>M.up[u.k]=0); ACTS.forEach(a=>M.talent[a.k]=0);
   M.lifeNo++; M.lives.unshift({st:0,no:M.lifeNo-1,age:0,title:'星還り',best:`${M.starNo}回目の星還り`,gain:0});
   S.life=freshLife(M); S.dead=false; S.stageUp=null; applyStage();
   if(S.autoUp)autoUpgrade();
-  addLog(`星に還り、しずくを${g}つ授かった。もう一度、村から歩きはじめる`,true);
-  S.starCard=g; showStarCard(); renderPane(); save();
+  addLog(`星に還り、しずくを${g}つ授かった。もう一度、歩きはじめる`,true);
+  S.starCard=g; S.cardKind='star'; showStarCard(); renderPane(); save();
+}
+function newVolume(){
+  const M=S.meta, g=pageGain(); if(g<=0)return;
+  M.page=(M.page||0)+g; M.pageTotal=(M.pageTotal||0)+g; M.vol=(M.vol||1)+1;
+  M.star=0; M.starTotal=0; M.starNo=0; M.sup={};
+  M.mem=0; M.memTotal=0; M.stage=pg('open'); UPS.forEach(u=>M.up[u.k]=0); ACTS.forEach(a=>M.talent[a.k]=0);
+  M.lifeNo++; M.lives.unshift({st:0,no:M.lifeNo-1,age:0,title:'新しい巻',best:`第${M.vol}巻へ`,gain:0});
+  S.life=freshLife(M); S.dead=false; S.stageUp=null; applyStage();
+  if(S.autoUp)autoUpgrade();
+  addLog(`年代記の第${M.vol-1}巻を書き終え、物語の頁を${g}枚授かった。第${M.vol}巻のはじまり`,true);
+  S.starCard=g; S.cardKind='page'; showStarCard(); renderPane(); save();
 }
 function showStarCard(){
+  if(S.cardKind==='page'){
+    $('dcard').innerHTML=`<p class="arrive" style="color:#b0702a">第${S.meta.vol}巻のはじまり</p><h2>物語の頁 +${S.starCard}</h2>
+     <p>しずくも、かけらも、すべて一冊の本に綴じました。新しい巻のネーニアは、前の巻の物語に背中を押されて歩きだします。</p>
+     <p class="gain num">稼ぎと上達 ×${fmt(pageMult())}</p>
+     <button class="big-btn" id="starOk">ページをめくる</button>`;
+    $('veil').hidden=false;
+    const close=()=>{S.starCard=0;$('veil').hidden=true};
+    $('starOk').addEventListener('click',close);
+    if(S.autoReb)setTimeout(()=>{if(S.starCard)close()},5000);
+    return;
+  }
   $('dcard').innerHTML=`<p class="arrive" style="color:#6a5fc4">星還り</p><h2>星のしずく +${S.starCard}</h2>
    <p>記憶のかけらも才能も星に還しました。そのかわり、しずくの光がずっと背中を押してくれます。</p>
    <p class="gain num">稼ぎと上達 ×${starMult().toFixed(1)}</p>
@@ -524,7 +595,7 @@ function showStarCard(){
 }
 function advanceStage(){
   const M=S.meta; M.stage=M.stage||0;
-  while(M.stage<STAGES.length-1&&(M.memTotal||0)>=thr(M.stage+1))M.stage++;
+  while(M.stage<STAGES.length-1&&(M.memTotal||0)>=thr(M.stage+1)){M.stage++;dexAdd('st',M.stage)}
   applyStage();
 }
 function applyStage(){try{document.documentElement.style.setProperty('--stage',STAGES[stage()].c)}catch(e){}}
@@ -587,7 +658,8 @@ function render(){
   const L=S.life, M=S.meta;
   $('gold').textContent=fmt(L.gold); $('mem').textContent=fmt(M.mem);
   $('dropBox').hidden=!(M.starTotal||stage()>=2); $('drop').textContent=fmt(M.star||0);
-  $('lifeNo').textContent=`第${M.lifeNo}の人生`;
+  $('pageBox').hidden=!(M.pageTotal||stage()>=4); $('pageN').textContent=fmt(M.page||0);
+  $('lifeNo').textContent=`${(M.vol||1)>1?`第${M.vol}巻・`:''}第${M.lifeNo}の人生`;
   const ls=lifespan(); if(Math.floor(ls)!==ribbonLife){ribbonLife=Math.floor(ls);buildRibbon()}
   const p=Math.min(1,(L.age-START_AGE)/(ls-START_AGE));
   $('rfill').style.width=(p*100)+'%'; $('rme').style.left=Math.min(96,Math.max(4,p*100))+'%'; $('rme').textContent=Math.floor(L.age)+'歳';
@@ -596,7 +668,7 @@ function render(){
   const st=stage(), nx=STAGES[st+1], cur=STAGES[st], tot=M.memTotal||0;
   $('stName').textContent=cur.n;
   const bonus=st?`稼ぎ ×${fmt(stGold())}・上達 ×${stExp().toFixed(1)} ／ `:'';
-  if(nx){$('stFill').style.width=Math.min(100,(tot-thr(st))/(thr(st+1)-thr(st))*100)+'%'; $('stNext').textContent=`${bonus}次の舞台「${nx.n}」まで 記憶のかけら ${fmt(tot)} / ${fmt(thr(st+1))}`}
+  if(nx){$('stFill').style.width=Math.max(0,Math.min(100,(tot-thr(st))/(thr(st+1)-thr(st))*100))+'%'; $('stNext').textContent=`${bonus}次の舞台「${nx.n}」まで 記憶のかけら ${fmt(tot)} / ${fmt(thr(st+1))}`}
   else{$('stFill').style.width='100%'; $('stNext').textContent=`${bonus}最後の舞台にたどり着きました`}
   ACTS.forEach(a=>{
     const e=actEls[a.k], ok=unlocked(a);
@@ -611,7 +683,7 @@ function render(){
       e.em.textContent=(a.g?`金貨 +${fmt(goldRate(a.k))}/秒`:a.d)+tal;
     }
   });
-  if(curTab==='shop'||curTab==='reb'||curTab==='starr')refreshButtons();
+  if(curTab==='shop'||curTab==='reb'||curTab==='starr'||curTab==='page')refreshButtons();
   updateScene();
 }
 
@@ -655,6 +727,35 @@ function renderPane(){
       if((u.max&&l>=u.max)||(S.meta.star||0)<c)return;
       S.meta.star-=c; S.meta.sup[u.k]=l+1; renderPane(); render(); save();
     }));
+  }else if(curTab==='page'){
+    const M=S.meta, g=pageGain(), ok=stage()>=4;
+    p.insertAdjacentHTML('beforeend',`<p class="note">年代記を一冊書き終えて、新しい巻をはじめます。星のしずく・星の祭壇の強化も含めて、これまでのものはすべてリセットされます。そのかわり「物語の頁」がもらえて、1枚につき稼ぎと上達がずっと +25% になります。頁は下の「物語の机」で強化にも使えます。図鑑とこれまでの記録は消えません。</p>
+     <div class="item" style="background:color-mix(in srgb,var(--bg) 80%,#b0702a)"><span class="t">${ok?`いま新しい巻をはじめると 頁 +${g}`:'「星の海」にたどり着くと新しい巻をはじめられます'}</span>
+      <span class="d">これまでの頁 ${fmt(M.pageTotal||0)}（稼ぎ・上達 ×${fmt(pageMult())}）・いまは第${M.vol||1}巻</span>
+      <button id="pageGo" ${ok&&g>0?'':'disabled'}>新しい巻へ</button></div>
+     <p class="note" style="margin-top:6px">物語の机（頁で強化）</p>`);
+    PUPS.forEach(u=>p.insertAdjacentHTML('beforeend',`<div class="item star-up" data-p="${u.k}"><span class="t">${u.n} <span class="num" style="color:var(--muted);font-weight:500">Lv${pg(u.k)}</span></span><span class="d">${u.d}</span><button></button></div>`));
+    let armed=0;
+    $('pageGo').addEventListener('click',e=>{
+      if(Date.now()-armed>4000){armed=Date.now();e.target.textContent='もう一度押すとはじまります';setTimeout(()=>{if(e.target.isConnected)e.target.textContent='新しい巻へ'},4000);return}
+      newVolume();
+    });
+    p.querySelectorAll('.item[data-p]').forEach(el=>el.querySelector('button').addEventListener('click',()=>{
+      const u=PUPS.find(x=>x.k===el.dataset.p), l=pg(u.k), c=u.cost(l);
+      if((u.max&&l>=u.max)||(S.meta.page||0)<c)return;
+      S.meta.page-=c; S.meta.pup[u.k]=l+1; renderPane(); render(); save();
+    }));
+  }else if(curTab==='dex'){
+    const D=S.meta.dex, ev=allEvents();
+    const tot=STAGES.length+ACTS.length+TITLES.length+ev.length;
+    p.insertAdjacentHTML('beforeend',`<p class="note">これまでに見たもの、たどり着いたものが記録されます。どんなリセットでも消えません。1つ埋まるごとに上達が +1%（いま ×${(1+0.01*(S.meta.dexN||0)).toFixed(2)}）。</p>
+      <div class="dex-h">ぜんぶ <span class="num">${S.meta.dexN||0} / ${tot}</span></div>`);
+    const sec=(name,list)=>{const n=list.filter(x=>x[1]).length;
+      p.insertAdjacentHTML('beforeend',`<div class="dex-h">${name}<span class="num">${n} / ${list.length}</span></div><div class="dex-grid">${list.map(([t,ok])=>`<span class="${ok?'':'no'}">${ok?t:'？？？'}</span>`).join('')}</div>`)};
+    sec('舞台',STAGES.map((x,i)=>[x.n,D.st[i]]));
+    sec('活動',ACTS.map(a=>[a.n,D.ac[a.k]]));
+    sec('称号',TITLES.map(([_,t])=>[t,D.ti[t]]));
+    sec('出来事',ev.map(e=>[e[0],D.ev[e[0]]]));
   }else if(curTab==='save'){
     p.insertAdjacentHTML('beforeend',`<p class="note">データはこのブラウザに自動で保存されています。ページを閉じていても、最大12時間ぶんは次に開いたときにまとめて進みます。別の端末やブラウザに移すとき、念のための控えを取るときは「セーブコード」を使ってください。</p>
      <div class="savebox">
@@ -693,6 +794,10 @@ function refreshButtons(){
     const i=ITEMS.find(x=>x.k===el.dataset.i), b=el.querySelector('button'), own=!!S.life.items[i.k];
     el.classList.toggle('owned',own); b.disabled=own||S.life.gold<i.c||S.dead; b.textContent=own?'持っている':'金貨 '+fmt(i.c);
   });
+  $('pane').querySelectorAll('.item[data-p]').forEach(el=>{
+    const u=PUPS.find(x=>x.k===el.dataset.p), l=pg(u.k), b=el.querySelector('button'), mx=u.max&&l>=u.max;
+    b.disabled=mx||(S.meta.page||0)<u.cost(l); b.textContent=mx?'最大':'頁 '+u.cost(l);
+  });
   $('pane').querySelectorAll('.item[data-s]').forEach(el=>{
     const u=SUPS.find(x=>x.k===el.dataset.s), l=sup(u.k), b=el.querySelector('button'), mx=u.max&&l>=u.max;
     b.disabled=mx||(S.meta.star||0)<u.cost(l); b.textContent=mx?'最大':'しずく '+u.cost(l);
@@ -716,12 +821,13 @@ function showDeath(){
   $('veil').hidden=false; $('reborn').addEventListener('click',rebirth); $('reborn').focus();
 }
 
-function syncToggles(){$('tgAuto').setAttribute('aria-pressed',S.auto);$('tgShop').setAttribute('aria-pressed',S.autoShop);$('tgReb').setAttribute('aria-pressed',S.autoReb);$('tgUp').setAttribute('aria-pressed',S.autoUp);$('tgStar').setAttribute('aria-pressed',S.autoStar);$('tgSpeed').setAttribute('aria-pressed',S.speed>1)}
+function syncToggles(){$('tgAuto').setAttribute('aria-pressed',S.auto);$('tgShop').setAttribute('aria-pressed',S.autoShop);$('tgReb').setAttribute('aria-pressed',S.autoReb);$('tgUp').setAttribute('aria-pressed',S.autoUp);$('tgStar').setAttribute('aria-pressed',S.autoStar);$('tgPage').setAttribute('aria-pressed',S.autoPage);$('tgSpeed').setAttribute('aria-pressed',S.speed>1)}
 $('tgAuto').addEventListener('click',()=>{S.auto=!S.auto;syncToggles()});
 $('tgShop').addEventListener('click',()=>{S.autoShop=!S.autoShop;syncToggles()});
 $('tgReb').addEventListener('click',()=>{S.autoReb=!S.autoReb;S.rebT=3;syncToggles();if(S.dead)showDeath()});
 $('tgUp').addEventListener('click',()=>{S.autoUp=!S.autoUp;syncToggles();if(S.autoUp)autoUpgrade()});
 $('tgStar').addEventListener('click',()=>{S.autoStar=!S.autoStar;syncToggles()});
+$('tgPage').addEventListener('click',()=>{S.autoPage=!S.autoPage;syncToggles()});
 $('tgSpeed').addEventListener('click',()=>{S.speed=S.speed>1?1:2;syncToggles()});
 
 let tt;
@@ -737,6 +843,13 @@ function start(hotData){
   if(S.autoUp===undefined)S.autoUp=true;
   if(S.autoStar===undefined)S.autoStar=true;
   S.meta.sup=S.meta.sup||{}; S.meta.star=S.meta.star||0; S.meta.starTotal=S.meta.starTotal||0;
+  if(S.autoPage===undefined)S.autoPage=true;
+  {const M=S.meta; M.pup=M.pup||{}; M.page=M.page||0; M.pageTotal=M.pageTotal||0; M.vol=M.vol||1;
+   if(!M.dex){M.dex={st:{},ac:{},ti:{},ev:{}}; M.dexN=0;
+     for(let i=0;i<=(M.stage||0);i++)dexAdd('st',i);
+     Object.keys(S.life.seen||{}).forEach(k=>dexAdd('ac',k));
+     S.life.log.forEach(l=>{allEvents().forEach(e=>{if(l.t.startsWith(e[0]))dexAdd('ev',e[0])})});
+     M.lives.forEach(v=>{if(TITLES.some(t=>t[1]===v.title))dexAdd('ti',v.title)});}}
   {const M=S.meta; M.stage=M.stage||0;
    if(M.memTotal===undefined){let spent=0; UPS.forEach(u=>{for(let l=0;l<(M.up[u.k]||0);l++)spent+=u.cost(l)}); M.memTotal=M.mem+spent}
    ACTS.forEach(a=>{if(S.life.lv[a.k]===undefined){S.life.lv[a.k]=0;S.life.exp[a.k]=0} if(M.talent[a.k]===undefined)M.talent[a.k]=0});
