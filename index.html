@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>*,*::before,*::after{box-sizing:border-box}:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>ネーニア年代記</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+/* Layout: a life-ribbon header that is always visible, then activities and a tabbed side book (shop / rebirth / chronicle / past lives); stacks to one column on phones. */
+:root{
+  --bg:#e9eee8; --surface:#f8faf5; --sunk:#dfe6de; --ink:#22302a; --muted:#64736b;
+  --accent:#c5861a; --accent-soft:#f3e2bf; --teal:#3b6a60; --teal-soft:#d4e5df; --line:#c9d3ca; --danger:#b4533c;
+  --display:"Yusei Magic","Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;
+  --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#131917; --surface:#1c2421; --sunk:#252f2b; --ink:#e6ece5; --muted:#93a198;
+  --accent:#e6ae48; --accent-soft:#3d3220; --teal:#83b6a8; --teal-soft:#21342f; --line:#33403b; --danger:#e08a73; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#131917; --surface:#1c2421; --sunk:#252f2b; --ink:#e6ece5; --muted:#93a198;
+  --accent:#e6ae48; --accent-soft:#3d3220; --teal:#83b6a8; --teal-soft:#21342f; --line:#33403b; --danger:#e08a73; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-weight:500;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+/* header */
+.top{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.toprow{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 16px}
+h1{font-family:var(--display);font-weight:400;font-size:1.7rem;margin:0;line-height:1.2;text-wrap:balance}
+h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:8px;letter-spacing:.05em}
+.purse{display:flex;gap:16px;flex-wrap:wrap}
+.purse div{display:flex;flex-direction:column;align-items:flex-end}
+.purse b{font-size:1.25rem}
+.purse span{font-size:.72rem;color:var(--muted);letter-spacing:.08em}
+.gold b{color:var(--accent)} .star b{color:var(--teal)}
+
+.ribbon{position:relative;height:38px}
+.ribbon .track{position:absolute;left:0;right:0;top:12px;height:12px;border-radius:6px;background:var(--sunk);overflow:hidden}
+.ribbon .fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--accent));width:0}
+.ribbon .tick{position:absolute;top:26px;font-size:.66rem;color:var(--muted);transform:translateX(-50%)}
+.ribbon .tick::before{content:"";position:absolute;left:50%;top:-14px;width:1px;height:12px;background:var(--line)}
+.ribbon .me{position:absolute;top:0;font-size:.72rem;transform:translateX(-50%);color:var(--ink);white-space:nowrap;font-weight:700}
+.agebar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 14px;font-size:.88rem;color:var(--muted)}
+.agebar b{color:var(--ink);font-size:1.05rem}
+.toggles{display:flex;gap:8px;flex-wrap:wrap}
+.tg{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 12px;font-size:.8rem}
+.tg[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--surface)}
+
+/* main */
+.main{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.main{grid-template-columns:minmax(0,1fr)}}
+.sect-h{font-family:var(--display);font-weight:400;font-size:1.15rem;margin:0 0 8px 4px}
+.acts{display:flex;flex-direction:column;gap:8px}
+.act{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:4px 12px;align-items:center;text-align:left;
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;transition:border-color .2s,transform .1s}
+.act:hover:not(:disabled){border-color:var(--teal)}
+.act:active:not(:disabled){transform:scale(.99)}
+.act.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.act:disabled{cursor:default;opacity:.62}
+.seal{grid-row:span 2;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+  font-family:var(--display);font-size:1.4rem;background:var(--teal-soft);color:var(--teal)}
+.act.on .seal{background:var(--accent);color:var(--surface)}
+.act .nm{font-weight:700;display:flex;gap:8px;align-items:baseline;min-width:0}
+.act .nm em{font-style:normal;font-size:.75rem;color:var(--muted);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.act .lv{font-size:.9rem;color:var(--muted);text-align:right}
+.act .lv b{color:var(--ink);font-size:1.05rem}
+.bar{grid-column:2 / 4;height:7px;border-radius:4px;background:var(--sunk);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--teal)}
+.act.on .bar i{background:var(--accent)}
+.lock{grid-column:2 / 4;font-size:.75rem;color:var(--muted)}
+
+.book{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid var(--line);overflow-x:auto}
+.tab{flex:1;border:0;background:none;padding:10px 6px;font-size:.88rem;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+.pane{padding:12px;display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto}
+.note{font-size:.8rem;color:var(--muted);margin:0 2px 4px}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--bg)}
+.item .t{font-weight:700}
+.item .d{font-size:.78rem;color:var(--muted);grid-column:1}
+.item button{grid-row:1 / 3;grid-column:2;border:1px solid var(--accent);background:var(--accent-soft);border-radius:10px;padding:6px 10px;font-size:.82rem;min-width:84px}
+.item button:disabled{border-color:var(--line);background:none;color:var(--muted);cursor:default}
+.item.owned{opacity:.55}
+.item.star-up button{border-color:var(--teal);background:var(--teal-soft)}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.log li{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px;font-size:.86rem}
+.log li span{color:var(--muted);text-align:right}
+.log li.big{color:var(--accent);font-weight:700}
+.past{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;font-size:.84rem;padding:8px 10px;border-radius:12px;background:var(--bg)}
+.past b{font-family:var(--display);font-weight:400}
+
+/* death */
+.veil{position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:5;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;max-width:420px;width:100%;display:flex;flex-direction:column;gap:12px;text-align:center}
+.card h2{font-family:var(--display);font-weight:400;font-size:1.6rem;margin:0}
+.card p{margin:0;color:var(--muted)}
+.card .gain{font-size:1.1rem;color:var(--teal)}
+.big-btn{border:0;border-radius:14px;padding:12px;background:var(--accent);color:var(--surface);font-weight:700;font-size:1rem}
+.savebox{display:flex;flex-direction:column;gap:8px}
+.savebox textarea{font:inherit;font-size:.75rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px;width:100%;box-sizing:border-box;resize:vertical;word-break:break-all}
+.savebox .row{display:flex;gap:8px;flex-wrap:wrap}
+.tg.danger{color:var(--danger);border-color:var(--danger)}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);
+  padding:8px 16px;border-radius:999px;font-size:.85rem;opacity:0;transition:opacity .3s;pointer-events:none;max-width:calc(100% - 32px)}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="toprow">
+      <h1>ネーニア年代記<small id="lifeNo">第1の人生</small></h1>
+      <div class="purse">
+        <div class="gold"><b class="num" id="gold">0</b><span>金貨</span></div>
+        <div class="star"><b class="num" id="mem">0</b><span>記憶のかけら</span></div>
+      </div>
+    </div>
+    <div class="ribbon" id="ribbon"><div class="track"><div class="fill" id="rfill"></div></div><div class="me" id="rme">14歳</div></div>
+    <div class="agebar">
+      <div>いま <b class="num" id="age">14</b>歳 ・ 寿命 <b class="num" id="life">50</b>歳</div>
+      <div id="title">肩書き：村の子</div>
+    </div>
+    <div class="toggles">
+      <button class="tg" id="tgAuto" aria-pressed="true">おまかせ行動</button>
+      <button class="tg" id="tgShop" aria-pressed="true">おかいもの自動</button>
+      <button class="tg" id="tgSpeed" aria-pressed="false">はやおくり ×2</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <section>
+      <h2 class="sect-h">きょうの暮らし</h2>
+      <div class="acts" id="acts"></div>
+    </section>
+    <section class="book">
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" data-t="shop" aria-selected="true">お店</button>
+        <button class="tab" role="tab" data-t="reb" aria-selected="false">転生の泉</button>
+        <button class="tab" role="tab" data-t="log" aria-selected="false">年代記</button>
+        <button class="tab" role="tab" data-t="past" aria-selected="false">歴代の人生</button>
+        <button class="tab" role="tab" data-t="save" aria-selected="false">セーブ</button>
+      </div>
+      <div class="pane" id="pane"></div>
+    </section>
+  </div>
+</div>
+<div class="veil" id="veil" hidden><div class="card" id="dcard"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+const SAVE='neenia-chronicle-v1';
+const START_AGE=14, YEAR_SEC=6;
+
+const ACTS=[
+ {k:'farm',  n:'畑仕事',     s:'畑', g:1,   d:'金貨をこつこつ稼ぐ', u:()=>true, uh:''},
+ {k:'sword', n:'素振り',     s:'剣', g:0,   d:'冒険がはかどる',     u:L=>L.farm>=5, uh:'畑仕事 Lv5'},
+ {k:'book',  n:'読書',       s:'書', g:0,   d:'すべての上達が早くなる', u:L=>L.farm>=10, uh:'畑仕事 Lv10'},
+ {k:'trade', n:'行商',       s:'商', g:7,   d:'まとまった金貨',     u:L=>L.book>=10&&L.farm>=15, uh:'読書 Lv10・畑仕事 Lv15'},
+ {k:'adv',   n:'冒険',       s:'旅', g:20,  d:'たくさんの金貨',     u:L=>L.sword>=20, uh:'素振り Lv20'},
+ {k:'magic', n:'魔法の研究', s:'魔', g:5,   d:'読書の効果が倍に',   u:L=>L.book>=25, uh:'読書 Lv25'},
+ {k:'pray',  n:'星への祈り', s:'祈', g:0,   d:'この人生の寿命がのびる', u:L=>L.magic>=10, uh:'魔法の研究 Lv10'},
+ {k:'king',  n:'王の政務',   s:'王', g:120, d:'国を治めて大もうけ', u:L=>L.trade>=30&&L.adv>=25&&L.magic>=25, uh:'行商30・冒険25・魔法25'},
+];
+const ITEMS=[
+ {k:'hat',   n:'わら帽子',       c:40,    d:'畑仕事の稼ぎ ×2'},
+ {k:'woodsw',n:'木刀',           c:150,   d:'素振りの上達 ×1.5'},
+ {k:'candle',n:'ろうそく',       c:400,   d:'読書の上達 ×1.5'},
+ {k:'bed',   n:'ふかふかベッド', c:1200,  d:'すべての上達 ×1.2'},
+ {k:'cart',  n:'荷車',           c:3000,  d:'行商の稼ぎ ×2'},
+ {k:'armor', n:'革のよろい',     c:9000,  d:'冒険の上達 ×1.5'},
+ {k:'orb',   n:'水晶玉',         c:30000, d:'魔法の上達 ×2'},
+ {k:'house', n:'小さな家',       c:80000, d:'すべての上達 ×1.5'},
+ {k:'castle',n:'お城',           c:2e6,   d:'王の政務の稼ぎ ×2'},
+];
+const UPS=[
+ {k:'life',  n:'長寿の泉',     d:'寿命 +5歳',              cost:l=>2+l*3},
+ {k:'exp',   n:'早熟の才',     d:'すべての上達 +25%',      cost:l=>4+l*4},
+ {k:'inh',   n:'ひいおばあの遺産', d:'生まれた時の金貨が増える', cost:l=>3+l*3},
+ {k:'slow',  n:'時の砂時計',   d:'年をとるのが10%ゆっくり（最大5）', cost:l=>8+l*6, max:5},
+];
+const EVENTS=[
+ ['村祭りでおだんごをもらった',0],['道で金貨を拾った',1],['猫に懐かれた',0],['星がとてもきれいな夜だった',0],
+ ['旅の吟遊詩人から歌を教わった',0],['畑で大きなかぶが採れた',1],['雨宿りした小屋で昼寝した',0],['友だちと川で魚を釣った',0],
+ ['古い宝箱を見つけた',3],['風邪をひいて一日寝ていた',0],['となり村のパン屋さんと仲良くなった',0],['流れ星にお願いをした',0],
+];
+const TITLES=[[0,'村の子'],[40,'働き者'],[100,'旅人'],[180,'町の名士'],[280,'英雄'],[400,'賢王'],[560,'伝説の人']];
+
+function freshLife(meta){
+  const lv={},exp={}; ACTS.forEach(a=>{lv[a.k]=0;exp[a.k]=0});
+  return {gold:meta?Math.floor(100*(Math.pow(3,meta.up.inh)-1)/2):0, age:START_AGE, act:'farm', lv, exp, items:{}, seen:{farm:1}, log:[]};
+}
+let S;
+function newGame(){
+  const meta={mem:0,talent:{},up:{life:0,exp:0,inh:0,slow:0},lives:[],lifeNo:1};
+  ACTS.forEach(a=>meta.talent[a.k]=0);
+  S={meta,life:freshLife(null),auto:true,autoShop:true,speed:1,dead:false,savedAt:Date.now()};
+  addLog('この世に生まれ落ちた。まずは畑を手伝おう',true);
+}
+function load(){
+  try{const raw=localStorage.getItem(SAVE); if(raw){S=JSON.parse(raw); return true}}catch(e){}
+  return false;
+}
+function save(){S.savedAt=Date.now(); try{localStorage.setItem(SAVE,JSON.stringify(S))}catch(e){}}
+
+const lifespan=()=>50+S.meta.up.life*5+S.life.lv.pray*0.25;
+const ageRate=()=>(1-0.1*S.meta.up.slow)/YEAR_SEC;
+const req=lv=>Math.floor(40*Math.pow(1.13,lv));
+const has=k=>!!S.life.items[k];
+function expMult(k){
+  const L=S.life.lv;
+  let m=(1+0.04*S.meta.talent[k])*(1+0.25*S.meta.up.exp)*(1+0.012*L.book*(L.magic>0?1+L.magic*0.04:1));
+  if(has('bed'))m*=1.2; if(has('house'))m*=1.5;
+  if(k==='sword'&&has('woodsw'))m*=1.5; if(k==='book'&&has('candle'))m*=1.5;
+  if(k==='adv'){m*=1+0.02*L.sword; if(has('armor'))m*=1.5}
+  if(k==='magic'&&has('orb'))m*=2;
+  return m;
+}
+function goldRate(k){
+  const a=ACTS.find(x=>x.k===k); let g=a.g*(1+0.15*S.life.lv[k]);
+  if(k==='farm'&&has('hat'))g*=2; if(k==='trade'&&has('cart'))g*=2; if(k==='king'&&has('castle'))g*=2;
+  return g;
+}
+const unlocked=a=>a.u(S.life.lv);
+const totalLv=()=>Object.values(S.life.lv).reduce((a,b)=>a+b,0);
+function title(){let t=TITLES[0][1]; TITLES.forEach(([n,x])=>{if(totalLv()>=n)t=x}); return t}
+
+function addLog(text,big){S.life.log.unshift({a:Math.floor(S.life.age),t:text,b:!!big}); if(S.life.log.length>80)S.life.log.pop()}
+
+let autoT=0;
+function step(dt){
+  if(S.dead)return;
+  const L=S.life, prevYear=Math.floor(L.age);
+  L.age+=dt*ageRate();
+  let a=ACTS.find(x=>x.k===L.act); if(!a||!unlocked(a)){a=ACTS[0];L.act='farm'}
+  L.exp[a.k]+=20*expMult(a.k)*dt;
+  while(L.exp[a.k]>=req(L.lv[a.k])){
+    L.exp[a.k]-=req(L.lv[a.k]); L.lv[a.k]++;
+    if(L.lv[a.k]%10===0)addLog(`${a.n}が Lv${L.lv[a.k]} になった`);
+  }
+  L.gold+=goldRate(a.k)*dt;
+  ACTS.forEach(x=>{if(!L.seen[x.k]&&unlocked(x)){L.seen[x.k]=1;addLog(`「${x.n}」ができるようになった！`,true);toast(`「${x.n}」が解放されました`)}});
+  if(Math.floor(L.age)>prevYear&&Math.random()<0.3){
+    const e=EVENTS[Math.floor(Math.random()*EVENTS.length)];
+    if(e[1]){const g=Math.ceil((goldRate(L.act)+1)*YEAR_SEC*e[1]);L.gold+=g;addLog(`${e[0]}（金貨+${fmt(g)}）`)}else addLog(e[0]);
+  }
+  autoT+=dt;
+  if(autoT>=1){autoT=0; if(S.auto)autoPick(); if(S.autoShop)autoBuy()}
+  if(L.age>=lifespan())die();
+}
+function autoPick(){
+  const L=S.life, open=ACTS.filter(unlocked);
+  // gold-poor? keep earning. Otherwise raise the lowest-level thing, favouring newer ones.
+  const nextItem=ITEMS.find(i=>!L.items[i.k]);
+  let best=null,score=1e9;
+  open.forEach((a,i)=>{
+    let s=L.lv[a.k]-i*1.5-S.meta.talent[a.k]*0.3;
+    if(nextItem&&L.gold<nextItem.c*0.2&&a.g>0)s-=6;
+    if(s<score){score=s;best=a}
+  });
+  if(best)L.act=best.k;
+}
+function autoBuy(){ITEMS.forEach(i=>{if(!S.life.items[i.k]&&S.life.gold>=i.c){S.life.gold-=i.c;S.life.items[i.k]=1;addLog(`${i.n}を買った`)}})}
+
+function die(){
+  const L=S.life, M=S.meta;
+  const gain=Math.max(1,Math.floor(totalLv()/12)+Math.floor(L.age/15)+(L.lv.king>0?5:0));
+  ACTS.forEach(a=>{M.talent[a.k]=Math.max(M.talent[a.k],L.lv[a.k])});
+  M.mem+=gain;
+  const bestA=ACTS.reduce((b,a)=>L.lv[a.k]>L.lv[b.k]?a:b,ACTS[0]);
+  M.lives.unshift({no:M.lifeNo,age:Math.floor(L.age),title:title(),best:`${bestA.n} Lv${L.lv[bestA.k]}`,gain});
+  if(M.lives.length>30)M.lives.pop();
+  addLog(`${Math.floor(L.age)}歳で静かに生涯を終えた`,true);
+  S.dead=true; S.lastGain=gain; save(); showDeath(); renderPane();
+}
+function rebirth(){
+  S.meta.lifeNo++; S.life=freshLife(S.meta); S.dead=false;
+  addLog(`第${S.meta.lifeNo}の人生がはじまった。前世の記憶がうっすら残っている`,true);
+  $('veil').hidden=true; renderPane(); save();
+}
+
+/* ---------- view ---------- */
+const $=id=>document.getElementById(id);
+function fmt(n){n=Math.floor(n); if(n<1e4)return n.toLocaleString('ja-JP'); if(n<1e8)return (n/1e4).toFixed(n<1e5?1:0)+'万'; if(n<1e12)return (n/1e8).toFixed(1)+'億'; return (n/1e12).toFixed(1)+'兆'}
+
+const actEls={};
+function buildActs(){
+  const box=$('acts'); box.innerHTML='';
+  ACTS.forEach(a=>{
+    const b=document.createElement('button'); b.className='act'; b.id='act-'+a.k;
+    b.innerHTML=`<span class="seal">${a.s}</span><span class="nm">${a.n}<em></em></span><span class="lv num">Lv <b>0</b></span><span class="bar"><i></i></span><span class="lock" hidden></span>`;
+    b.addEventListener('click',()=>{if(S.dead||!unlocked(a))return; S.life.act=a.k; if(S.auto){S.auto=false;syncToggles();toast('自分で選んだので、おまかせ行動をオフにしました')} render()});
+    box.appendChild(b); actEls[a.k]={b,em:b.querySelector('em'),lv:b.querySelector('.lv b'),bar:b.querySelector('.bar i'),barW:b.querySelector('.bar'),lock:b.querySelector('.lock')};
+  });
+}
+function buildRibbon(){
+  const r=$('ribbon'); r.querySelectorAll('.tick').forEach(t=>t.remove());
+  const span=lifespan()-START_AGE;
+  for(let y=20;y<lifespan();y+=10){const t=document.createElement('span');t.className='tick num';t.style.left=((y-START_AGE)/span*100)+'%';t.textContent=y;r.appendChild(t)}
+}
+let ribbonLife=0;
+function render(){
+  const L=S.life, M=S.meta;
+  $('gold').textContent=fmt(L.gold); $('mem').textContent=fmt(M.mem);
+  $('lifeNo').textContent=`第${M.lifeNo}の人生`;
+  const ls=lifespan(); if(Math.floor(ls)!==ribbonLife){ribbonLife=Math.floor(ls);buildRibbon()}
+  const p=Math.min(1,(L.age-START_AGE)/(ls-START_AGE));
+  $('rfill').style.width=(p*100)+'%'; $('rme').style.left=Math.min(96,Math.max(4,p*100))+'%'; $('rme').textContent=Math.floor(L.age)+'歳';
+  $('age').textContent=Math.floor(L.age); $('life').textContent=Math.floor(ls);
+  $('title').textContent='肩書き：'+title();
+  ACTS.forEach(a=>{
+    const e=actEls[a.k], ok=unlocked(a);
+    e.b.disabled=!ok; e.b.classList.toggle('on',L.act===a.k&&!S.dead);
+    e.lv.textContent=L.lv[a.k];
+    e.lock.hidden=ok; e.barW.hidden=!ok;
+    if(!ok){e.lock.textContent='解放条件：'+a.uh; e.em.textContent=''}
+    else{
+      e.bar.style.width=(L.exp[a.k]/req(L.lv[a.k])*100)+'%';
+      const tal=M.talent[a.k]?` ・才能${M.talent[a.k]}`:'';
+      e.em.textContent=(a.g?`金貨 +${fmt(goldRate(a.k))}/秒`:a.d)+tal;
+    }
+  });
+  if(curTab==='shop'||curTab==='reb')refreshButtons();
+}
+
+let curTab='shop';
+function renderPane(){
+  const p=$('pane'); p.innerHTML='';
+  if(curTab==='shop'){
+    p.insertAdjacentHTML('beforeend','<p class="note">この人生のあいだ効き目がつづく道具です。生まれ変わると無くなります。</p>');
+    ITEMS.forEach(i=>p.insertAdjacentHTML('beforeend',`<div class="item" data-i="${i.k}"><span class="t">${i.n}</span><span class="d">${i.d}</span><button>金貨 ${fmt(i.c)}</button></div>`));
+    p.querySelectorAll('.item').forEach(el=>el.querySelector('button').addEventListener('click',()=>{
+      const i=ITEMS.find(x=>x.k===el.dataset.i); if(S.life.items[i.k]||S.life.gold<i.c)return;
+      S.life.gold-=i.c; S.life.items[i.k]=1; addLog(`${i.n}を買った`); render();
+    }));
+  }else if(curTab==='reb'){
+    p.insertAdjacentHTML('beforeend','<p class="note">人生を終えるたびに「記憶のかけら」がたまります。ここで使うと、次の人生からずっと効きます。上達した技は「才能」として残り、次の人生で伸びやすくなります。</p>');
+    UPS.forEach(u=>p.insertAdjacentHTML('beforeend',`<div class="item star-up" data-u="${u.k}"><span class="t">${u.n} <span class="num" style="color:var(--muted);font-weight:500">Lv${S.meta.up[u.k]}</span></span><span class="d">${u.d}</span><button></button></div>`));
+    p.querySelectorAll('.item').forEach(el=>el.querySelector('button').addEventListener('click',()=>{
+      const u=UPS.find(x=>x.k===el.dataset.u), l=S.meta.up[u.k], c=u.cost(l);
+      if((u.max&&l>=u.max)||S.meta.mem<c)return;
+      S.meta.mem-=c; S.meta.up[u.k]++; renderPane(); render(); save();
+    }));
+  }else if(curTab==='log'){
+    const ul=document.createElement('ul'); ul.className='log';
+    S.life.log.forEach(l=>ul.insertAdjacentHTML('beforeend',`<li class="${l.b?'big':''}"><span class="num">${l.a}歳</span>${l.t}</li>`));
+    p.appendChild(ul);
+  }else if(curTab==='save'){
+    p.insertAdjacentHTML('beforeend',`<p class="note">データはこのブラウザに自動で保存されています。別の端末やブラウザに移すとき、念のための控えを取るときは「セーブコード」を使ってください。</p>
+     <div class="savebox">
+      <button class="big-btn" id="svCopy">セーブコードをコピー</button>
+      <textarea id="svCode" rows="4" placeholder="ここにセーブコードを貼りつけて「読み込む」を押す"></textarea>
+      <div class="row"><button class="tg" id="svLoad">読み込む</button><button class="tg danger" id="svReset">最初からやり直す</button></div>
+     </div>`);
+    const ta=$('svCode');
+    $('svCopy').addEventListener('click',()=>{
+      save(); const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+      const fallback=()=>{ta.value=code;ta.focus();ta.select();toast('下の欄のコードを選んでコピーしてください')};
+      try{navigator.clipboard.writeText(code).then(()=>toast('セーブコードをコピーしました'),fallback)}catch(e){fallback()}
+    });
+    $('svLoad').addEventListener('click',()=>{
+      try{
+        const d=JSON.parse(decodeURIComponent(escape(atob(ta.value.trim()))));
+        if(!d||!d.meta||!d.life)throw 0;
+        S=d; ribbonLife=0; save(); ta.value='';
+        $('veil').hidden=true; if(S.dead)showDeath();
+        syncToggles(); render(); toast('セーブコードを読み込みました');
+      }catch(e){toast('読み込めませんでした。コードを最後まで貼りつけたか確認してください')}
+    });
+    let armed=0;
+    $('svReset').addEventListener('click',e=>{
+      if(Date.now()-armed>4000){armed=Date.now();e.target.textContent='本当に？もう一度押すと消えます';setTimeout(()=>{e.target.textContent='最初からやり直す'},4000);return}
+      newGame(); ribbonLife=0; save(); $('veil').hidden=true; syncToggles(); renderPane(); render(); toast('最初からはじめました');
+    });
+  }else{
+    if(!S.meta.lives.length)p.insertAdjacentHTML('beforeend','<p class="note">まだ最初の人生の途中です。寿命をむかえると、ここに記録が残ります。</p>');
+    S.meta.lives.forEach(v=>p.insertAdjacentHTML('beforeend',`<div class="past"><b>第${v.no}</b><span>${v.title}・${v.best}</span><span class="num">${v.age}歳 ／ +${v.gain}</span></div>`));
+  }
+  refreshButtons();
+}
+function refreshButtons(){
+  $('pane').querySelectorAll('.item[data-i]').forEach(el=>{
+    const i=ITEMS.find(x=>x.k===el.dataset.i), b=el.querySelector('button'), own=!!S.life.items[i.k];
+    el.classList.toggle('owned',own); b.disabled=own||S.life.gold<i.c||S.dead; b.textContent=own?'持っている':'金貨 '+fmt(i.c);
+  });
+  $('pane').querySelectorAll('.item[data-u]').forEach(el=>{
+    const u=UPS.find(x=>x.k===el.dataset.u), l=S.meta.up[u.k], b=el.querySelector('button'), mx=u.max&&l>=u.max;
+    b.disabled=mx||S.meta.mem<u.cost(l); b.textContent=mx?'最大':'かけら '+u.cost(l);
+  });
+}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  curTab=t.dataset.t; document.querySelectorAll('.tab').forEach(x=>x.setAttribute('aria-selected',x===t)); renderPane();
+}));
+
+function showDeath(){
+  const v=S.meta.lives[0];
+  $('dcard').innerHTML=`<h2>第${v.no}の人生、おしまい</h2>
+   <p>${v.age}歳まで生きて「${v.title}」と呼ばれました。<br>いちばん得意だったのは ${v.best}。</p>
+   <p class="gain num">記憶のかけら +${v.gain}</p>
+   <p>覚えた技は才能として次の人生に残ります。</p>
+   <button class="big-btn" id="reborn">生まれ変わる</button>`;
+  $('veil').hidden=false; $('reborn').addEventListener('click',rebirth); $('reborn').focus();
+}
+
+function syncToggles(){$('tgAuto').setAttribute('aria-pressed',S.auto);$('tgShop').setAttribute('aria-pressed',S.autoShop);$('tgSpeed').setAttribute('aria-pressed',S.speed>1)}
+$('tgAuto').addEventListener('click',()=>{S.auto=!S.auto;syncToggles()});
+$('tgShop').addEventListener('click',()=>{S.autoShop=!S.autoShop;syncToggles()});
+$('tgSpeed').addEventListener('click',()=>{S.speed=S.speed>1?1:2;syncToggles()});
+
+let tt;
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2600)}
+
+/* ---------- boot ---------- */
+function start(hotData){
+  if(hotData&&hotData.S)S=hotData.S;
+  else if(!load())newGame();
+  else{ // offline progress, up to 2 hours
+    let away=Math.min(7200,(Date.now()-(S.savedAt||Date.now()))/1000);
+    if(away>30&&!S.dead){const g0=S.life.gold; while(away>0&&!S.dead){step(Math.min(1,away));away-=1}
+      if(!S.dead)toast(`留守のあいだに 金貨+${fmt(S.life.gold-g0)}`)}
+  }
+  buildActs(); syncToggles(); renderPane(); render();
+  if(S.dead)showDeath();
+  let last=performance.now(), acc=0, saveT=0;
+  function loop(now){
+    let dt=Math.min(0.5,(now-last)/1000); last=now;
+    const was=S.dead;
+    step(dt*S.speed);
+    acc+=dt; saveT+=dt;
+    if(acc>0.1){acc=0;render(); if(curTab==='log'&&S.life.log.length&&$('pane').querySelectorAll('li').length!==S.life.log.length)renderPane()}
+    if(saveT>5){saveT=0;save()}
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  window.addEventListener('pagehide',save);
+}
+window.claude?.hot?.snapshot?.(()=>({S}));
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>
+
+</body>
+</html>
