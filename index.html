@@ -134,6 +134,7 @@ h1 small{font-family:var(--body);font-size:.8rem;color:var(--muted);margin-left:
     <div class="toggles">
       <button class="tg" id="tgAuto" aria-pressed="true">おまかせ行動</button>
       <button class="tg" id="tgShop" aria-pressed="true">おかいもの自動</button>
+      <button class="tg" id="tgReb" aria-pressed="true">うまれかわり自動</button>
       <button class="tg" id="tgSpeed" aria-pressed="false">はやおくり ×2</button>
     </div>
   </header>
@@ -205,7 +206,7 @@ let S;
 function newGame(){
   const meta={mem:0,talent:{},up:{life:0,exp:0,inh:0,slow:0},lives:[],lifeNo:1};
   ACTS.forEach(a=>meta.talent[a.k]=0);
-  S={meta,life:freshLife(null),auto:true,autoShop:true,speed:1,dead:false,savedAt:Date.now()};
+  S={meta,life:freshLife(null),auto:true,autoShop:true,autoReb:true,speed:1,dead:false,savedAt:Date.now()};
   addLog('この世に生まれ落ちた。まずは畑を手伝おう',true);
 }
 function load(){
@@ -240,7 +241,7 @@ function addLog(text,big){S.life.log.unshift({a:Math.floor(S.life.age),t:text,b:
 
 let autoT=0;
 function step(dt){
-  if(S.dead)return;
+  if(S.dead){if(S.autoReb){S.rebT=(S.rebT??3)-dt; if(S.rebT<=0)rebirth()} return}
   const L=S.life, prevYear=Math.floor(L.age);
   L.age+=dt*ageRate();
   let a=ACTS.find(x=>x.k===L.act); if(!a||!unlocked(a)){a=ACTS[0];L.act='farm'}
@@ -282,7 +283,7 @@ function die(){
   M.lives.unshift({no:M.lifeNo,age:Math.floor(L.age),title:title(),best:`${bestA.n} Lv${L.lv[bestA.k]}`,gain});
   if(M.lives.length>30)M.lives.pop();
   addLog(`${Math.floor(L.age)}歳で静かに生涯を終えた`,true);
-  S.dead=true; S.lastGain=gain; save(); showDeath(); renderPane();
+  S.dead=true; S.lastGain=gain; S.rebT=3; save(); showDeath(); renderPane();
 }
 function rebirth(){
   S.meta.lifeNo++; S.life=freshLife(S.meta); S.dead=false;
@@ -408,14 +409,15 @@ function showDeath(){
   $('dcard').innerHTML=`<h2>第${v.no}の人生、おしまい</h2>
    <p>${v.age}歳まで生きて「${v.title}」と呼ばれました。<br>いちばん得意だったのは ${v.best}。</p>
    <p class="gain num">記憶のかけら +${v.gain}</p>
-   <p>覚えた技は才能として次の人生に残ります。</p>
+   <p>覚えた技は才能として次の人生に残ります。</p>${S.autoReb?'<p>まもなく自動で生まれ変わります</p>':''}
    <button class="big-btn" id="reborn">生まれ変わる</button>`;
   $('veil').hidden=false; $('reborn').addEventListener('click',rebirth); $('reborn').focus();
 }
 
-function syncToggles(){$('tgAuto').setAttribute('aria-pressed',S.auto);$('tgShop').setAttribute('aria-pressed',S.autoShop);$('tgSpeed').setAttribute('aria-pressed',S.speed>1)}
+function syncToggles(){$('tgAuto').setAttribute('aria-pressed',S.auto);$('tgShop').setAttribute('aria-pressed',S.autoShop);$('tgReb').setAttribute('aria-pressed',S.autoReb);$('tgSpeed').setAttribute('aria-pressed',S.speed>1)}
 $('tgAuto').addEventListener('click',()=>{S.auto=!S.auto;syncToggles()});
 $('tgShop').addEventListener('click',()=>{S.autoShop=!S.autoShop;syncToggles()});
+$('tgReb').addEventListener('click',()=>{S.autoReb=!S.autoReb;S.rebT=3;syncToggles();if(S.dead)showDeath()});
 $('tgSpeed').addEventListener('click',()=>{S.speed=S.speed>1?1:2;syncToggles()});
 
 let tt;
@@ -425,9 +427,10 @@ function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');cle
 function start(hotData){
   if(hotData&&hotData.S)S=hotData.S;
   else if(!load())newGame();
+  if(S.autoReb===undefined)S.autoReb=true;
   else{ // offline progress, up to 2 hours
     let away=Math.min(7200,(Date.now()-(S.savedAt||Date.now()))/1000);
-    if(away>30&&!S.dead){const g0=S.life.gold; while(away>0&&!S.dead){step(Math.min(1,away));away-=1}
+    if(away>30&&!(S.dead&&!S.autoReb)){const g0=S.life.gold; while(away>0&&!(S.dead&&!S.autoReb)){step(Math.min(1,away));away-=1}
       if(!S.dead)toast(`留守のあいだに 金貨+${fmt(S.life.gold-g0)}`)}
   }
   buildActs(); syncToggles(); renderPane(); render();
